@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Deyvid Infotech
 
-## Getting Started
+Sistema administrativo para assistência técnica, desenvolvido com Next.js,
+TypeScript, Tailwind CSS, shadcn/ui, React Hook Form, Zod, Prisma, PostgreSQL e
+jsPDF.
 
-First, run the development server:
+## Primeira entrega
+
+- Dashboard com filtros, indicadores, gráfico e ordens recentes.
+- Layout administrativo responsivo com menu lateral e drawer no mobile.
+- Cadastro e busca de clientes.
+- Cadastro e busca de equipamentos, com segredo de desbloqueio criptografado.
+- Ordem de serviço em seis etapas, incluindo cadastro inline e assinaturas.
+- Numeração sequencial transacional no formato `OS-ANO-000001`.
+- Listagem, busca, detalhe, linha do tempo e atualização de status.
+- Pré-visualização A4, impressão e PDF da ordem em uma ou duas vias.
+- Prisma com os 15 modelos solicitados e seed inicial.
+
+Os módulos de recibos, garantias, comprovantes, mensagens, configurações e
+demais PDFs estão sinalizados na interface para as próximas entregas.
+
+## Requisitos
+
+- Node.js 22 ou superior.
+- npm.
+- PostgreSQL 16+ ou Docker.
+
+## Configuração
+
+1. Copie `.env.example` para `.env`.
+2. Gere uma chave de criptografia:
+
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+
+3. Substitua `DATA_ENCRYPTION_KEY` pelo valor gerado.
+4. Altere `SEED_ADMIN_EMAIL` e `SEED_ADMIN_PASSWORD`.
+5. Inicie o PostgreSQL:
+
+   ```bash
+   docker compose up -d
+   ```
+
+6. Prepare e popule o banco:
+
+   ```bash
+   npm run db:generate
+   npm run db:push
+   npm run db:seed
+   ```
+
+7. Inicie a aplicação:
+
+   ```bash
+   npm run dev
+   ```
+
+A aplicação estará disponível em `http://localhost:3000`.
+
+## Comandos
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run lint
+npm run typecheck
+npm run build
+npm run db:generate
+npm run db:push
+npm run db:seed
+npm run db:studio
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Estrutura principal
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+src/
+  app/             rotas, páginas e Route Handlers
+  components/      interface, formulários, documentos e PDF
+  hooks/           hooks reutilizáveis
+  lib/             Prisma, criptografia e dados auxiliares
+  repositories/    consultas e mapeamento de dados
+  schemas/         validação Zod
+  services/        regras de negócio e geração de PDF
+  types/           contratos serializáveis
+  utils/           máscaras e formatação
+prisma/
+  schema.prisma
+  seed.ts
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Segurança
 
-## Learn More
+- O segredo de desbloqueio do equipamento usa AES-256-GCM e não é retornado nas
+  listagens.
+- As APIs validam novamente os dados com Zod.
+- O seed exige credenciais definidas no ambiente e nunca contém uma senha real.
+- Autenticação, recuperação de senha e controle de permissões pertencem à
+  próxima etapa e devem ser concluídos antes de publicar o sistema.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# script
