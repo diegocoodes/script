@@ -1,0 +1,362 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  ATTENDANT
+  TECHNICIAN
+}
+
+enum ServiceOrderStatus {
+  RECEIVED
+  IN_ANALYSIS
+  AWAITING_APPROVAL
+  AWAITING_PART
+  IN_MAINTENANCE
+  COMPLETED
+  READY_FOR_PICKUP
+  DELIVERED
+  CANCELED
+}
+
+enum ServiceOrderPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum EquipmentType {
+  NOTEBOOK
+  COMPUTER
+  SMARTPHONE
+  TABLET
+  PRINTER
+  MONITOR
+  CONSOLE
+  OTHER
+}
+
+enum PaymentMethod {
+  CASH
+  PIX
+  CREDIT_CARD
+  DEBIT_CARD
+  TRANSFER
+  OTHER
+}
+
+enum DocumentType {
+  SERVICE_ORDER
+  WARRANTY_TERM
+  PAYMENT_RECEIPT
+  DELIVERY_RECEIPT
+  SERVICE_TABLE
+  SALE_COMPLETED
+  SERVICE_COMPLETED
+  READY_FOR_PICKUP
+  EQUIPMENT_RECEIVED
+  THANK_YOU
+}
+
+model User {
+  id             String         @id @default(uuid())
+  name           String
+  email          String         @unique
+  passwordHash   String
+  role           UserRole       @default(ATTENDANT)
+  active         Boolean        @default(true)
+  assignedOrders ServiceOrder[] @relation("AssignedTechnician")
+  auditLogs      AuditLog[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([role, active])
+}
+
+model CompanySettings {
+  id                     String   @id @default(uuid())
+  companyName            String
+  legalName              String?
+  document               String?
+  phone                  String?
+  whatsapp               String?
+  instagram              String?
+  email                  String?
+  address                String?
+  city                   String?
+  state                  String?
+  logoUrl                String?
+  signatureUrl           String?
+  stampUrl               String?
+  primaryColor           String   @default("#0066FF")
+  secondaryColor         String   @default("#21A2FF")
+  defaultWarrantyDays    Int      @default(90)
+  warrantyTerms          String?
+  serviceOrderLegalText  String?
+  orderPrefix            String   @default("OS")
+  nextServiceOrderNumber Int      @default(1)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+model Customer {
+  id            String         @id @default(uuid())
+  name          String
+  document      String?        @unique
+  phone         String?
+  whatsapp      String?
+  email         String?
+  address       String?
+  city          String?
+  state         String?
+  notes         String?
+  equipment     Equipment[]
+  serviceOrders ServiceOrder[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([name])
+  @@index([phone])
+}
+
+model Equipment {
+  id                   String           @id @default(uuid())
+  customerId           String
+  customer             Customer         @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  type                 EquipmentType
+  brand                String
+  model                String
+  serialNumber         String?
+  color                String?
+  unlockSecret         String?
+  deliveredAccessories String?
+  physicalCondition    String?
+  reportedDefect       String
+  notes                String?
+  photos               EquipmentPhoto[]
+  serviceOrders        ServiceOrder[]
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  @@index([customerId])
+  @@index([type, brand])
+  @@index([serialNumber])
+}
+
+model ServiceOrder {
+  id                    String               @id @default(uuid())
+  number                String               @unique
+  customerId            String
+  customer              Customer             @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  equipmentId           String
+  equipment             Equipment            @relation(fields: [equipmentId], references: [id], onDelete: Restrict)
+  technicianId          String?
+  technician            User?                @relation("AssignedTechnician", fields: [technicianId], references: [id], onDelete: SetNull)
+  technicianDisplayName String?
+  status                ServiceOrderStatus   @default(RECEIVED)
+  priority              ServiceOrderPriority @default(NORMAL)
+  reportedDefect        String
+  technicalDiagnosis    String?
+  requestedService      String
+  performedService      String?
+  partsUsed             String?
+  internalNotes         String?
+  customerNotes         String?
+  serviceValue          Decimal              @default(0) @db.Decimal(12, 2)
+  partsValue            Decimal              @default(0) @db.Decimal(12, 2)
+  discount              Decimal              @default(0) @db.Decimal(12, 2)
+  surcharge             Decimal              @default(0) @db.Decimal(12, 2)
+  totalValue            Decimal              @default(0) @db.Decimal(12, 2)
+  paidValue             Decimal              @default(0) @db.Decimal(12, 2)
+  pendingValue          Decimal              @default(0) @db.Decimal(12, 2)
+  paymentMethod         PaymentMethod?
+  entryDate             DateTime             @default(now())
+  expectedDeliveryDate  DateTime?
+  completedAt           DateTime?
+  pickedUpAt            DateTime?
+  clientSignature       String?
+  technicianSignature   String?
+  items                 ServiceOrderItem[]
+  payments              Payment[]
+  warranties            Warranty[]
+  receipts              Receipt[]
+  deliveryReceipts      DeliveryReceipt[]
+  generatedDocuments    GeneratedDocument[]
+  auditLogs             AuditLog[]
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+
+  @@index([customerId, createdAt])
+  @@index([equipmentId])
+  @@index([technicianId])
+  @@index([status, createdAt])
+  @@index([entryDate])
+}
+
+model ServiceOrderItem {
+  id             String       @id @default(uuid())
+  serviceOrderId String
+  serviceOrder   ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  serviceId      String?
+  service        Service?     @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  description    String
+  quantity       Int          @default(1)
+  unitValue      Decimal      @db.Decimal(12, 2)
+  totalValue     Decimal      @db.Decimal(12, 2)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([serviceOrderId])
+  @@index([serviceId])
+}
+
+model Service {
+  id            String             @id @default(uuid())
+  name          String
+  description   String?
+  category      String
+  minimumValue  Decimal            @db.Decimal(12, 2)
+  maximumValue  Decimal            @db.Decimal(12, 2)
+  estimatedTime String?
+  active        Boolean            @default(true)
+  orderItems    ServiceOrderItem[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@index([category, active])
+  @@index([name])
+}
+
+model Payment {
+  id             String        @id @default(uuid())
+  serviceOrderId String
+  serviceOrder   ServiceOrder  @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  amount         Decimal       @db.Decimal(12, 2)
+  method         PaymentMethod
+  paidAt         DateTime      @default(now())
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([serviceOrderId, paidAt])
+}
+
+model Warranty {
+  id                  String       @id @default(uuid())
+  serviceOrderId      String
+  serviceOrder        ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  startDate           DateTime
+  endDate             DateTime
+  warrantyDays        Int
+  serviceDetails      String
+  replacedParts       String?
+  notes               String?
+  customerSignature   String?
+  technicianSignature String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  @@index([serviceOrderId])
+  @@index([endDate])
+}
+
+model Receipt {
+  id             String        @id @default(uuid())
+  number         String        @unique
+  serviceOrderId String
+  serviceOrder   ServiceOrder  @relation(fields: [serviceOrderId], references: [id], onDelete: Restrict)
+  amount         Decimal       @db.Decimal(12, 2)
+  amountInWords  String
+  reference      String
+  paymentMethod  PaymentMethod
+  issuedAt       DateTime      @default(now())
+  signatureUrl   String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([serviceOrderId])
+  @@index([issuedAt])
+}
+
+model DeliveryReceipt {
+  id                  String       @id @default(uuid())
+  serviceOrderId      String
+  serviceOrder        ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Restrict)
+  deliveredAt         DateTime     @default(now())
+  equipmentCondition  String
+  confirmationText    String
+  customerSignature   String?
+  technicianSignature String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  @@index([serviceOrderId])
+  @@index([deliveredAt])
+}
+
+model GeneratedDocument {
+  id             String        @id @default(uuid())
+  serviceOrderId String?
+  serviceOrder   ServiceOrder? @relation(fields: [serviceOrderId], references: [id], onDelete: SetNull)
+  type           DocumentType
+  fileName       String
+  storageUrl     String?
+  metadata       Json?
+  generatedAt    DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([serviceOrderId, type])
+  @@index([generatedAt])
+}
+
+model MessageTemplate {
+  id        String   @id @default(uuid())
+  name      String
+  eventKey  String   @unique
+  content   String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active])
+}
+
+model EquipmentPhoto {
+  id          String    @id @default(uuid())
+  equipmentId String
+  equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  url         String
+  caption     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([equipmentId])
+}
+
+model AuditLog {
+  id             String        @id @default(uuid())
+  userId         String?
+  user           User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  serviceOrderId String?
+  serviceOrder   ServiceOrder? @relation(fields: [serviceOrderId], references: [id], onDelete: SetNull)
+  entity         String
+  entityId       String
+  action         String
+  oldValues      Json?
+  newValues      Json?
+  ipAddress      String?
+  createdAt      DateTime      @default(now())
+
+  @@index([entity, entityId])
+  @@index([serviceOrderId, createdAt])
+  @@index([userId, createdAt])
+}

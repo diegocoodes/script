@@ -58,6 +58,25 @@ demais PDFs estão sinalizados na interface para as próximas entregas.
 
 A aplicação estará disponível em `http://localhost:3000`.
 
+## Deploy na Vercel
+
+1. Importe o repositório `diegocoodes/script` na Vercel.
+2. Configure as variáveis de ambiente:
+   - `DATABASE_URL`: URL do banco PostgreSQL de produção.
+   - `DATA_ENCRYPTION_KEY`: chave hexadecimal de 64 caracteres.
+3. Aplique as migrations no banco de produção:
+
+   ```bash
+   npx prisma migrate deploy
+   ```
+
+4. Publique o projeto. A Vercel detectará o Next.js e executará
+   `npm run build`; o script `postinstall` gera o Prisma Client para o
+   ambiente Linux da plataforma.
+
+O arquivo `.env` nunca deve ser enviado ao Git. Use `.env.example` apenas como
+referência dos nomes esperados.
+
 ## Comandos
 
 ```bash
@@ -97,5 +116,3 @@ prisma/
 - O seed exige credenciais definidas no ambiente e nunca contém uma senha real.
 - Autenticação, recuperação de senha e controle de permissões pertencem à
   próxima etapa e devem ser concluídos antes de publicar o sistema.
-
-# script
