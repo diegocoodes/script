@@ -41,6 +41,7 @@ export function EquipmentForm({
     brand: string;
     model: string;
     reportedDefect: string;
+    notes: string | null;
   }) => void;
   onCancel?: () => void;
 }) {
@@ -84,6 +85,7 @@ export function EquipmentForm({
         brand?: string;
         model?: string;
         reportedDefect?: string;
+        notes?: string | null;
         message?: string;
       };
 
@@ -107,6 +109,7 @@ export function EquipmentForm({
           brand: result.brand,
           model: result.model,
           reportedDefect: result.reportedDefect ?? input.reportedDefect,
+          notes: result.notes ?? input.notes ?? null,
         });
       } else {
         router.push("/equipamentos");
@@ -310,10 +313,10 @@ export function EquipmentForm({
         </div>
 
         <div className="sm:col-span-2">
-          <Label htmlFor="equipment-notes">Observações</Label>
+          <Label htmlFor="equipment-notes">Descrição do equipamento</Label>
           <Textarea
             id="equipment-notes"
-            placeholder="Informações internas adicionais"
+            placeholder="Descreva características e outros detalhes importantes"
             className="mt-2"
             rows={3}
             {...register("notes")}

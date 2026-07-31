@@ -91,16 +91,25 @@ const stepFields: Array<Array<FieldPath<ServiceOrderInput>>> = [
 export function ServiceOrderForm({
   initialCustomers,
   initialEquipment,
+  initialCustomerId,
   today,
   expectedDate,
 }: {
   initialCustomers: CustomerView[];
   initialEquipment: EquipmentView[];
+  initialCustomerId?: string;
   today: string;
   expectedDate: string;
 }) {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(0);
+  const validInitialCustomerId = initialCustomers.some(
+    (customer) => customer.id === initialCustomerId,
+  )
+    ? initialCustomerId
+    : undefined;
+  const [currentStep, setCurrentStep] = useState(
+    validInitialCustomerId ? 1 : 0,
+  );
   const [customers, setCustomers] = useState(initialCustomers);
   const [equipment, setEquipment] = useState(initialEquipment);
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
@@ -110,8 +119,9 @@ export function ServiceOrderForm({
     resolver: zodResolver(serviceOrderSchema),
     mode: "onTouched",
     defaultValues: {
-      customerId: "",
+      customerId: validInitialCustomerId ?? "",
       equipmentId: "",
+      equipmentDescription: "",
       reportedDefect: "",
       technicalDiagnosis: "",
       requestedService: "",
@@ -162,6 +172,9 @@ export function ServiceOrderForm({
 
   function selectEquipment(id: string) {
     const selected = equipment.find((item) => item.id === id);
+    form.setValue("equipmentDescription", selected?.notes ?? "", {
+      shouldDirty: true,
+    });
     if (selected && !form.getValues("reportedDefect")) {
       form.setValue("reportedDefect", selected.reportedDefect, {
         shouldDirty: true,
@@ -226,7 +239,9 @@ export function ServiceOrderForm({
       shouldValidate: true,
     });
     form.setValue("equipmentId", "");
+    form.setValue("equipmentDescription", "");
     setCustomerDialogOpen(false);
+    setCurrentStep(1);
   }
 
   function addEquipment(item: {
@@ -235,6 +250,7 @@ export function ServiceOrderForm({
     brand: string;
     model: string;
     reportedDefect: string;
+    notes: string | null;
   }) {
     const newEquipment: EquipmentView = {
       ...item,
@@ -246,7 +262,7 @@ export function ServiceOrderForm({
       color: null,
       deliveredAccessories: null,
       physicalCondition: null,
-      notes: null,
+      notes: item.notes,
       orderCount: 0,
       createdAt: new Date().toISOString(),
     };
@@ -254,6 +270,9 @@ export function ServiceOrderForm({
     form.setValue("equipmentId", item.id, {
       shouldDirty: true,
       shouldValidate: true,
+    });
+    form.setValue("equipmentDescription", item.notes ?? "", {
+      shouldDirty: true,
     });
     if (!form.getValues("reportedDefect")) {
       form.setValue("reportedDefect", item.reportedDefect, {

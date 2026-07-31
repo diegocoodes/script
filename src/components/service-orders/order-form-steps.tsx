@@ -43,7 +43,10 @@ export function CustomerStep({
           aria-invalid={Boolean(error)}
           aria-describedby={error ? "order-customer-error" : undefined}
           {...form.register("customerId", {
-            onChange: () => form.setValue("equipmentId", ""),
+            onChange: () => {
+              form.setValue("equipmentId", "");
+              form.setValue("equipmentDescription", "");
+            },
           })}
         >
           <option value="">Selecione o cliente responsável</option>
@@ -121,6 +124,30 @@ export function EquipmentStep({
             Este cliente ainda não possui equipamentos cadastrados.
           </p>
         )}
+      </div>
+      <div>
+        <Label htmlFor="order-equipment-description">
+          Descrição do equipamento
+        </Label>
+        <Textarea
+          id="order-equipment-description"
+          rows={4}
+          className="mt-2"
+          placeholder="Descreva o equipamento, suas características e detalhes importantes"
+          disabled={!form.watch("equipmentId")}
+          aria-invalid={Boolean(
+            form.formState.errors.equipmentDescription,
+          )}
+          {...form.register("equipmentDescription")}
+        />
+        <FieldError
+          id="order-equipment-description-error"
+          message={form.formState.errors.equipmentDescription?.message}
+        />
+        <p className="mt-1.5 text-xs leading-5 text-slate-500">
+          Esta descrição ficará salva no equipamento e aparecerá na ordem de
+          serviço.
+        </p>
       </div>
       <div className="rounded-xl border border-dashed border-blue-200 bg-blue-50/60 p-4">
         <p className="text-sm font-semibold text-blue-950">

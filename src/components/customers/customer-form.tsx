@@ -70,7 +70,9 @@ export function CustomerForm({
       if (onCreated) {
         onCreated({ id: result.id, name: result.name });
       } else {
-        router.push("/clientes");
+        router.push(
+          `/ordens-servico/nova?cliente=${encodeURIComponent(result.id)}`,
+        );
         router.refresh();
       }
     } catch (error) {

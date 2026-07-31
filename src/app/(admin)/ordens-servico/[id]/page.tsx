@@ -197,6 +197,11 @@ export default async function ServiceOrderDetailPage({
                     value={order.physicalCondition}
                     className="sm:col-span-2"
                   />
+                  <Detail
+                    label="Descrição do equipamento"
+                    value={order.equipmentDescription}
+                    className="sm:col-span-2"
+                  />
                 </dl>
               </CardContent>
             </Card>

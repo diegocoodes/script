@@ -248,6 +248,7 @@ export async function downloadServiceOrderPdf(
       ["Número de série", order.equipmentSerialNumber],
       ["Acessórios entregues", order.deliveredAccessories],
       ["Estado físico", order.physicalCondition],
+      ["Descrição do equipamento", order.equipmentDescription],
     ]);
     addSection("Problema, diagnóstico e serviço", [
       ["Defeito relatado", order.reportedDefect],

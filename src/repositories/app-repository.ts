@@ -103,6 +103,7 @@ function toOrderView(order: OrderWithRelations): ServiceOrderView {
     equipmentColor: order.equipment.color,
     deliveredAccessories: order.equipment.deliveredAccessories,
     physicalCondition: order.equipment.physicalCondition,
+    equipmentDescription: order.equipment.notes,
     status: order.status,
     priority: order.priority,
     reportedDefect: order.reportedDefect,

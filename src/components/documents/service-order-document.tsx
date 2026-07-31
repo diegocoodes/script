@@ -215,6 +215,11 @@ export function ServiceOrderDocument({
             value={order.physicalCondition}
             wide
           />
+          <DocumentField
+            label="Descrição do equipamento"
+            value={order.equipmentDescription}
+            wide
+          />
         </dl>
       </DocumentSection>
 

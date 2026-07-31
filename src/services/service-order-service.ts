@@ -21,6 +21,11 @@ async function createInTransaction(input: ServiceOrderInput) {
         );
       }
 
+      await transaction.equipment.update({
+        where: { id: input.equipmentId },
+        data: { notes: input.equipmentDescription || null },
+      });
+
       let company = await transaction.companySettings.findFirst({
         orderBy: { createdAt: "asc" },
       });

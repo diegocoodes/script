@@ -75,6 +75,7 @@ export type ServiceOrderView = {
   equipmentColor: string | null;
   deliveredAccessories: string | null;
   physicalCondition: string | null;
+  equipmentDescription: string | null;
   status: string;
   priority: string;
   reportedDefect: string;

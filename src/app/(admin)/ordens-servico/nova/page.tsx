@@ -7,9 +7,17 @@ import { getAppData } from "@/repositories/app-repository";
 export const metadata: Metadata = { title: "Nova ordem de serviço" };
 export const dynamic = "force-dynamic";
 
-export default async function NewServiceOrderPage() {
+export default async function NewServiceOrderPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ cliente?: string | string[] }>;
+}) {
   const data = await getAppData();
   const now = new Date();
+  const customerParam = (await searchParams).cliente;
+  const initialCustomerId = Array.isArray(customerParam)
+    ? customerParam[0]
+    : customerParam;
 
   return (
     <>
@@ -21,6 +29,7 @@ export default async function NewServiceOrderPage() {
       <ServiceOrderForm
         initialCustomers={data.customers}
         initialEquipment={data.equipment}
+        initialCustomerId={initialCustomerId}
         today={format(now, "yyyy-MM-dd")}
         expectedDate={format(addBusinessDays(now, 3), "yyyy-MM-dd")}
       />

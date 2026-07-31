@@ -187,6 +187,7 @@ const baseOrder = {
   equipmentColor: null,
   deliveredAccessories: null,
   physicalCondition: null,
+  equipmentDescription: null,
   technicalDiagnosis: null,
   performedService: null,
   partsUsed: null,
