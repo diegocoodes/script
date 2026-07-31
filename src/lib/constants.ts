@@ -123,6 +123,14 @@ export const paymentMethodLabels: Record<string, string> = {
   OTHER: "Outro",
 };
 
+export const purchaseCategoryLabels: Record<string, string> = {
+  EQUIPMENT: "Equipamento",
+  PART: "Peça",
+  SUPPLY: "Material",
+  SERVICE: "Serviço contratado",
+  OTHER: "Outro",
+};
+
 export const dashboardMetricIcons = {
   open: CircleDashed,
   analysis: ShieldAlert,

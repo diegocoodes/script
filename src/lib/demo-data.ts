@@ -1,8 +1,10 @@
 import type {
   AppData,
+  BusinessPurchaseView,
   CompanyView,
   CustomerView,
   EquipmentView,
+  FinancialData,
   ServiceCatalogView,
   ServiceOrderView,
 } from "@/types/domain";
@@ -354,4 +356,61 @@ export const demoAppData: AppData = {
   equipment: demoEquipment,
   services: demoServices,
   orders: demoOrders,
+};
+
+export const demoPurchases: BusinessPurchaseView[] = [
+  {
+    id: "purchase-ssd",
+    description: "SSD NVMe 1 TB para estoque",
+    category: "PART",
+    quantity: 1,
+    totalValue: 289.9,
+    supplier: "Distribuidora Tech",
+    purchasedAt: "2026-07-29T15:00:00.000Z",
+    notes: null,
+    createdAt: "2026-07-29T15:00:00.000Z",
+  },
+  {
+    id: "purchase-tools",
+    description: "Kit de ferramentas de precisão",
+    category: "EQUIPMENT",
+    quantity: 1,
+    totalValue: 129.9,
+    supplier: "Ferramentas Pro",
+    purchasedAt: "2026-07-25T15:00:00.000Z",
+    notes: "Uso na bancada técnica.",
+    createdAt: "2026-07-25T15:00:00.000Z",
+  },
+];
+
+const demoTotalRevenue = demoOrders.reduce(
+  (total, order) => total + order.paidValue,
+  0,
+);
+const demoTotalExpenses = demoPurchases.reduce(
+  (total, purchase) => total + purchase.totalValue,
+  0,
+);
+
+export const demoFinancialData: FinancialData = {
+  totalRevenue: demoTotalRevenue,
+  totalExpenses: demoTotalExpenses,
+  balance: demoTotalRevenue - demoTotalExpenses,
+  outstandingValue: demoOrders.reduce(
+    (total, order) => total + order.pendingValue,
+    0,
+  ),
+  revenueCount: demoOrders.filter((order) => order.paidValue > 0).length,
+  purchaseCount: demoPurchases.length,
+  recentRevenues: demoOrders
+    .filter((order) => order.paidValue > 0)
+    .map((order) => ({
+      id: order.id,
+      number: order.number,
+      customerName: order.customerName,
+      paidValue: order.paidValue,
+      pendingValue: order.pendingValue,
+      entryDate: order.entryDate,
+    })),
+  recentPurchases: demoPurchases,
 };
