@@ -12,7 +12,14 @@ import type {
 } from "@/types/domain";
 
 type CustomerWithCount = Prisma.CustomerGetPayload<{
-  include: { _count: { select: { equipment: true; serviceOrders: true } } };
+  include: {
+    _count: { select: { equipment: true; serviceOrders: true } };
+    serviceOrders: {
+      select: { id: true; number: true };
+      orderBy: { createdAt: "desc" };
+      take: 1;
+    };
+  };
 }>;
 
 type EquipmentWithRelations = Prisma.EquipmentGetPayload<{
@@ -53,6 +60,8 @@ function toCustomerView(customer: CustomerWithCount): CustomerView {
     notes: customer.notes,
     equipmentCount: customer._count.equipment,
     orderCount: customer._count.serviceOrders,
+    latestOrderId: customer.serviceOrders[0]?.id ?? null,
+    latestOrderNumber: customer.serviceOrders[0]?.number ?? null,
     createdAt: customer.createdAt.toISOString(),
   };
 }
@@ -128,6 +137,11 @@ async function queryCustomers() {
   const customers = await prisma.customer.findMany({
     include: {
       _count: { select: { equipment: true, serviceOrders: true } },
+      serviceOrders: {
+        select: { id: true, number: true },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      },
     },
     orderBy: { name: "asc" },
   });

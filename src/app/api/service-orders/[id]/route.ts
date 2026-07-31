@@ -1,10 +1,23 @@
 import { z } from "zod";
 import { SERVICE_ORDER_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
+import { getOrderById } from "@/repositories/app-repository";
 
 const updateStatusSchema = z.object({
   status: z.enum(SERVICE_ORDER_STATUSES),
 });
+
+export async function GET(
+  _request: Request,
+  context: { params: Promise<{ id: string }> },
+) {
+  const { id } = await context.params;
+  const order = await getOrderById(id);
+  if (!order) {
+    return Response.json({ message: "Ordem de serviço não encontrada." }, { status: 404 });
+  }
+  return Response.json(order);
+}
 
 export async function PATCH(
   request: Request,

@@ -1,8 +1,11 @@
-import { Search } from "lucide-react";
+import { LogOut, Search } from "lucide-react";
+import { logoutAction } from "@/app/login/actions";
 import { MobileNavigation } from "@/components/layout/mobile-navigation";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type { SessionPayload } from "@/lib/session";
 
-export function Topbar() {
+export function Topbar({ session }: { session: SessionPayload }) {
   return (
     <header className="app-topbar sticky top-0 z-30 flex min-h-16 items-center gap-3 border-b border-slate-200/80 bg-white/90 px-4 backdrop-blur-lg sm:px-6 lg:px-8">
       <MobileNavigation />
@@ -28,9 +31,9 @@ export function Topbar() {
       <div className="ml-auto flex items-center gap-3">
         <span className="hidden text-right sm:block">
           <span className="block text-xs font-semibold text-slate-800">
-            Administrador
+            {session.name}
           </span>
-          <span className="block text-[10px] text-slate-500">Acesso total</span>
+          <span className="block text-[10px] text-slate-500">Administrador</span>
         </span>
         <span
           aria-hidden="true"
@@ -38,6 +41,17 @@ export function Topbar() {
         >
           DI
         </span>
+        <form action={logoutAction}>
+          <Button
+            type="submit"
+            variant="ghost"
+            size="icon-lg"
+            aria-label="Sair do sistema"
+            title="Sair"
+          >
+            <LogOut aria-hidden="true" className="size-4 text-slate-500" />
+          </Button>
+        </form>
       </div>
     </header>
   );

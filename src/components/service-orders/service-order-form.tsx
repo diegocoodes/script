@@ -214,9 +214,11 @@ export function ServiceOrderForm({
       city: null,
       state: null,
       notes: null,
-      equipmentCount: 0,
-      orderCount: 0,
-      createdAt: new Date().toISOString(),
+          equipmentCount: 0,
+          orderCount: 0,
+          latestOrderId: null,
+          latestOrderNumber: null,
+          createdAt: new Date().toISOString(),
     };
     setCustomers((items) => [...items, newCustomer]);
     form.setValue("customerId", customer.id, {

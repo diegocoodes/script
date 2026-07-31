@@ -11,6 +11,8 @@ export type CustomerView = {
   notes: string | null;
   equipmentCount: number;
   orderCount: number;
+  latestOrderId: string | null;
+  latestOrderNumber: string | null;
   createdAt: string;
 };
 

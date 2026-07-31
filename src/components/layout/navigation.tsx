@@ -3,23 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  FileCheck2,
   FileClock,
   FilePlus2,
-  Files,
-  Gauge,
-  MessageCircleMore,
+  House,
   MonitorSmartphone,
-  ReceiptText,
-  Settings2,
-  ShieldCheck,
   UsersRound,
-  Wrench,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navigation = [
-  { label: "Dashboard", href: "/dashboard", icon: Gauge },
+  { label: "Início", href: "/inicio", icon: House },
   {
     label: "Nova ordem de serviço",
     href: "/ordens-servico/nova",
@@ -33,13 +26,6 @@ const navigation = [
   },
   { label: "Clientes", href: "/clientes", icon: UsersRound },
   { label: "Equipamentos", href: "/equipamentos", icon: MonitorSmartphone },
-  { label: "Recibos", href: "/recibos", icon: ReceiptText },
-  { label: "Garantias", href: "/garantias", icon: ShieldCheck },
-  { label: "Comprovantes", href: "/comprovantes", icon: FileCheck2 },
-  { label: "Tabela de serviços", href: "/servicos", icon: Wrench },
-  { label: "Mensagens", href: "/mensagens", icon: MessageCircleMore },
-  { label: "Documentos gerados", href: "/documentos", icon: Files },
-  { label: "Configurações", href: "/configuracoes", icon: Settings2 },
 ] as const;
 
 export function Navigation({ onNavigate }: { onNavigate?: () => void }) {
@@ -49,7 +35,7 @@ export function Navigation({ onNavigate }: { onNavigate?: () => void }) {
     <nav aria-label="Navegação principal" className="space-y-1">
       {navigation.map((item) => {
         const active =
-          item.href === "/dashboard"
+          item.href === "/inicio"
             ? pathname === item.href
             : pathname.startsWith(item.href);
         const Icon = item.icon;

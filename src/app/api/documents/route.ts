@@ -3,7 +3,12 @@ import { prisma } from "@/lib/prisma";
 
 const documentLogSchema = z.object({
   serviceOrderId: z.string().min(1),
-  type: z.literal("SERVICE_ORDER"),
+  type: z.enum([
+    "SERVICE_ORDER",
+    "WARRANTY_TERM",
+    "PAYMENT_RECEIPT",
+    "DELIVERY_RECEIPT",
+  ]),
   fileName: z.string().min(1).max(220),
 });
 

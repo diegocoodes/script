@@ -35,6 +35,8 @@ export const demoCustomers: CustomerView[] = [
     notes: null,
     equipmentCount: 1,
     orderCount: 1,
+    latestOrderId: "order-001",
+    latestOrderNumber: "OS-2026-000001",
     createdAt: "2026-07-12T13:10:00.000Z",
   },
   {
@@ -50,6 +52,8 @@ export const demoCustomers: CustomerView[] = [
     notes: "Prefere contato por WhatsApp.",
     equipmentCount: 1,
     orderCount: 1,
+    latestOrderId: "order-002",
+    latestOrderNumber: "OS-2026-000002",
     createdAt: "2026-07-16T16:40:00.000Z",
   },
   {
@@ -65,6 +69,8 @@ export const demoCustomers: CustomerView[] = [
     notes: "Equipamentos corporativos.",
     equipmentCount: 1,
     orderCount: 2,
+    latestOrderId: "order-003",
+    latestOrderNumber: "OS-2026-000003",
     createdAt: "2026-07-18T10:20:00.000Z",
   },
 ];

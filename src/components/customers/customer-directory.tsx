@@ -4,6 +4,10 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ExternalLink, MessageCircle, Search, UsersRound } from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import {
+  CustomerDocumentActions,
+  type PreferredDocument,
+} from "@/components/customers/customer-document-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,13 +18,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { CustomerView } from "@/types/domain";
+import type { CompanyView, CustomerView } from "@/types/domain";
 import { formatWhatsappUrl } from "@/utils/formatters";
 
 export function CustomerDirectory({
   customers,
+  company,
+  preferredDocument,
 }: {
   customers: CustomerView[];
+  company: CompanyView;
+  preferredDocument?: PreferredDocument;
 }) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search);
@@ -59,6 +67,11 @@ export function CustomerDirectory({
             ? "cliente encontrado"
             : "clientes encontrados"}
         </p>
+        {preferredDocument && (
+          <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+            Escolha o cliente e use o botão destacado para baixar o PDF solicitado.
+          </div>
+        )}
       </div>
 
       {filteredCustomers.length === 0 ? (
@@ -87,6 +100,7 @@ export function CustomerDirectory({
                   <TableHead>Contato</TableHead>
                   <TableHead className="text-center">Equipamentos</TableHead>
                   <TableHead className="text-center">Ordens</TableHead>
+                  <TableHead className="min-w-40 text-right">Baixar PDFs</TableHead>
                   <TableHead className="w-28 text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
@@ -121,11 +135,19 @@ export function CustomerDirectory({
                       {customer.orderCount}
                     </TableCell>
                     <TableCell>
+                      <CustomerDocumentActions
+                        customer={customer}
+                        company={company}
+                        preferred={preferredDocument}
+                      />
+                    </TableCell>
+                    <TableCell>
                       <div className="flex justify-end gap-1">
                         {customer.whatsapp && (
                           <Button
                             variant="ghost"
                             size="icon-sm"
+                            nativeButton={false}
                             aria-label={`Conversar com ${customer.name} no WhatsApp`}
                             render={
                               <a
@@ -147,6 +169,7 @@ export function CustomerDirectory({
                         <Button
                           variant="ghost"
                           size="icon-sm"
+                          nativeButton={false}
                           aria-label={`Ver ordens de ${customer.name}`}
                           render={
                             <Link
@@ -182,6 +205,7 @@ export function CustomerDirectory({
                     <Button
                       variant="outline"
                       size="icon-lg"
+                      nativeButton={false}
                       aria-label={`Conversar com ${customer.name} no WhatsApp`}
                       render={
                         <a
@@ -207,6 +231,17 @@ export function CustomerDirectory({
                 <div className="mt-3 flex gap-4 text-xs text-slate-500">
                   <span>{customer.equipmentCount} equipamentos</span>
                   <span>{customer.orderCount} ordens</span>
+                </div>
+                <div className="mt-4 border-t border-slate-100 pt-4">
+                  <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    Baixar PDFs
+                  </p>
+                  <CustomerDocumentActions
+                    customer={customer}
+                    company={company}
+                    preferred={preferredDocument}
+                    mobile
+                  />
                 </div>
               </article>
             ))}

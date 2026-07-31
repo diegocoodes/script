@@ -24,6 +24,8 @@ export async function POST(request: Request) {
         ...customer,
         equipmentCount: 0,
         orderCount: 0,
+        latestOrderId: null,
+        latestOrderNumber: null,
         createdAt: customer.createdAt.toISOString(),
         updatedAt: customer.updatedAt.toISOString(),
       },

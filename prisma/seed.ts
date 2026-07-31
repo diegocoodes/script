@@ -52,6 +52,7 @@ async function main() {
     where: { email: adminEmail },
     update: {
       name: "Administrador Deyvid Infotech",
+      passwordHash: hashPassword(adminPassword),
       role: UserRole.ADMIN,
       active: true,
     },

@@ -4,13 +4,27 @@ import { UserPlus } from "lucide-react";
 import { CustomerDirectory } from "@/components/customers/customer-directory";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
-import { getCustomers } from "@/repositories/app-repository";
+import { getCompany, getCustomers } from "@/repositories/app-repository";
+import type { PreferredDocument } from "@/components/customers/customer-document-actions";
 
 export const metadata: Metadata = { title: "Clientes" };
 export const dynamic = "force-dynamic";
 
-export default async function CustomersPage() {
-  const customers = await getCustomers();
+export default async function CustomersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ documento?: string }>;
+}) {
+  const [{ documento }, customers, company] = await Promise.all([
+    searchParams,
+    getCustomers(),
+    getCompany(),
+  ]);
+  const preferredDocument = ["ordem", "garantia", "recibo", "entrega"].includes(
+    documento ?? "",
+  )
+    ? (documento as PreferredDocument)
+    : undefined;
 
   return (
     <>
@@ -22,6 +36,7 @@ export default async function CustomersPage() {
           <Button
             size="lg"
             className="h-11 px-4"
+            nativeButton={false}
             render={<Link href="/clientes/novo" />}
           >
             <UserPlus aria-hidden="true" className="size-4" />
@@ -29,7 +44,11 @@ export default async function CustomersPage() {
           </Button>
         }
       />
-      <CustomerDirectory customers={customers} />
+      <CustomerDirectory
+        customers={customers}
+        company={company}
+        preferredDocument={preferredDocument}
+      />
     </>
   );
 }
