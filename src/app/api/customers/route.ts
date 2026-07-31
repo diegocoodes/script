@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { customerSchema } from "@/schemas/customer";
 
@@ -24,6 +23,8 @@ export async function POST(request: Request) {
         ...customer,
         equipmentCount: 0,
         orderCount: 0,
+        purchaseCount: 0,
+        registrationCount: 1,
         latestOrderId: null,
         latestOrderNumber: null,
         createdAt: customer.createdAt.toISOString(),
@@ -32,16 +33,6 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
-      return Response.json(
-        { message: "Já existe um cliente com este CPF ou CNPJ." },
-        { status: 409 },
-      );
-    }
-
     return Response.json(
       {
         message:

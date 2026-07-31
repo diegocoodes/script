@@ -46,7 +46,11 @@ function reportFallback(area: string, error: unknown) {
   }
 }
 
-function toCustomerView(customer: CustomerWithCount): CustomerView {
+function toCustomerView(
+  customer: CustomerWithCount,
+  purchaseCount = customer._count.serviceOrders,
+  registrationCount = 1,
+): CustomerView {
   return {
     id: customer.id,
     name: customer.name,
@@ -60,6 +64,8 @@ function toCustomerView(customer: CustomerWithCount): CustomerView {
     notes: customer.notes,
     equipmentCount: customer._count.equipment,
     orderCount: customer._count.serviceOrders,
+    purchaseCount,
+    registrationCount,
     latestOrderId: customer.serviceOrders[0]?.id ?? null,
     latestOrderNumber: customer.serviceOrders[0]?.number ?? null,
     createdAt: customer.createdAt.toISOString(),
@@ -148,7 +154,31 @@ async function queryCustomers() {
     },
     orderBy: { name: "asc" },
   });
-  return customers.map(toCustomerView);
+  return customers.map((customer) => {
+    const document = customer.document?.replace(/\D/g, "") || null;
+    const email = customer.email?.trim().toLocaleLowerCase("pt-BR") || null;
+    const relatedCustomers = customers.filter((candidate) => {
+      const candidateDocument = candidate.document?.replace(/\D/g, "") || null;
+      const candidateEmail =
+        candidate.email?.trim().toLocaleLowerCase("pt-BR") || null;
+
+      return (
+        candidate.id === customer.id ||
+        (document !== null && candidateDocument === document) ||
+        (email !== null && candidateEmail === email)
+      );
+    });
+
+    return toCustomerView(
+      customer,
+      relatedCustomers.reduce(
+        (total, relatedCustomer) =>
+          total + relatedCustomer._count.serviceOrders,
+        0,
+      ),
+      relatedCustomers.length,
+    );
+  });
 }
 
 async function queryEquipment() {
@@ -209,7 +239,7 @@ async function queryCompany(): Promise<CompanyView> {
     address: company.address,
     city: company.city,
     state: company.state,
-    logoUrl: company.logoUrl,
+    logoUrl: company.logoUrl ?? "/logo.png",
     primaryColor: company.primaryColor,
   };
 }

@@ -157,6 +157,11 @@ export function CustomerForm({
             inputMode="numeric"
             placeholder="000.000.000-00"
             aria-invalid={Boolean(errors.document)}
+            aria-describedby={
+              errors.document
+                ? "customer-document-help customer-document-error"
+                : "customer-document-help"
+            }
             {...register("document", {
               onChange: (event) =>
                 setValue("document", maskDocument(event.target.value)),
@@ -166,6 +171,12 @@ export function CustomerForm({
             id="customer-document-error"
             message={errors.document?.message}
           />
+          <p
+            id="customer-document-help"
+            className="mt-1.5 text-xs leading-5 text-slate-500"
+          >
+            O mesmo documento pode ser cadastrado novamente em futuros atendimentos.
+          </p>
         </div>
 
         <div>
@@ -176,9 +187,20 @@ export function CustomerForm({
             placeholder="cliente@email.com"
             autoComplete="email"
             aria-invalid={Boolean(errors.email)}
+            aria-describedby={
+              errors.email
+                ? "customer-email-help customer-email-error"
+                : "customer-email-help"
+            }
             {...register("email")}
           />
           <FieldError id="customer-email-error" message={errors.email?.message} />
+          <p
+            id="customer-email-help"
+            className="mt-1.5 text-xs leading-5 text-slate-500"
+          >
+            E-mails repetidos são permitidos e entram no histórico do cliente.
+          </p>
         </div>
 
         <div>

@@ -58,7 +58,13 @@ export function CustomerDirectory({
     const query = debouncedSearch.trim().toLocaleLowerCase("pt-BR");
     if (!query) return customerItems;
     return customerItems.filter((customer) =>
-      [customer.name, customer.document, customer.phone, customer.whatsapp]
+      [
+        customer.name,
+        customer.document,
+        customer.phone,
+        customer.whatsapp,
+        customer.email,
+      ]
         .filter(Boolean)
         .some((value) => value?.toLocaleLowerCase("pt-BR").includes(query)),
     );
@@ -150,7 +156,7 @@ export function CustomerDirectory({
                   <TableHead>Documento</TableHead>
                   <TableHead>Contato</TableHead>
                   <TableHead className="text-center">Equipamentos</TableHead>
-                  <TableHead className="text-center">Ordens</TableHead>
+                  <TableHead className="text-center">Compras</TableHead>
                   <TableHead className="min-w-40 text-right">Baixar PDFs</TableHead>
                   <TableHead className="w-28 text-right">Ações</TableHead>
                 </TableRow>
@@ -167,6 +173,11 @@ export function CustomerDirectory({
                           .filter(Boolean)
                           .join(" · ") || "Local não informado"}
                       </span>
+                      {customer.registrationCount > 1 && (
+                        <span className="mt-1 block text-[11px] font-semibold text-blue-600">
+                          {customer.registrationCount} cadastros vinculados
+                        </span>
+                      )}
                     </TableCell>
                     <TableCell className="text-slate-500">
                       {customer.document || "—"}
@@ -183,7 +194,7 @@ export function CustomerDirectory({
                       {customer.equipmentCount}
                     </TableCell>
                     <TableCell className="text-center tabular-nums">
-                      {customer.orderCount}
+                      {customer.purchaseCount}
                     </TableCell>
                     <TableCell>
                       <CustomerDocumentActions
@@ -262,6 +273,11 @@ export function CustomerDirectory({
                     <p className="mt-1 text-xs text-slate-400">
                       {customer.document || "Documento não informado"}
                     </p>
+                    {customer.registrationCount > 1 && (
+                      <p className="mt-1 text-xs font-semibold text-blue-600">
+                        {customer.registrationCount} cadastros vinculados
+                      </p>
+                    )}
                   </div>
                   {customer.whatsapp && (
                     <Button
@@ -293,7 +309,10 @@ export function CustomerDirectory({
                 </p>
                 <div className="mt-3 flex gap-4 text-xs text-slate-500">
                   <span>{customer.equipmentCount} equipamentos</span>
-                  <span>{customer.orderCount} ordens</span>
+                  <span>
+                    {customer.purchaseCount}{" "}
+                    {customer.purchaseCount === 1 ? "compra" : "compras"}
+                  </span>
                 </div>
                 <div className="mt-4 border-t border-slate-100 pt-4">
                   <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">

@@ -37,6 +37,7 @@ async function main() {
       whatsapp: "(11) 99999-2026",
       instagram: "@deyvidinfotech",
       email: "contato@deyvidinfotech.local",
+      logoUrl: "/logo.png",
       address: "Av. Tecnologia, 256",
       city: "São Paulo",
       state: "SP",
@@ -66,7 +67,7 @@ async function main() {
 
   const customers = await Promise.all([
     prisma.customer.upsert({
-      where: { document: "123.456.789-10" },
+      where: { id: "customer-marina" },
       update: {},
       create: {
         id: "customer-marina",
@@ -81,7 +82,7 @@ async function main() {
       },
     }),
     prisma.customer.upsert({
-      where: { document: "987.654.321-00" },
+      where: { id: "customer-rafael" },
       update: {},
       create: {
         id: "customer-rafael",
@@ -95,7 +96,7 @@ async function main() {
       },
     }),
     prisma.customer.upsert({
-      where: { document: "45.678.901/0001-22" },
+      where: { id: "customer-nova" },
       update: {},
       create: {
         id: "customer-nova",

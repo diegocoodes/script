@@ -199,6 +199,8 @@ export function ServiceOrderForm({
       notes: null,
       equipmentCount: 0,
       orderCount: 0,
+      purchaseCount: 0,
+      registrationCount: 1,
       latestOrderId: null,
       latestOrderNumber: null,
       createdAt: new Date().toISOString(),
