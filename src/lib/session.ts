@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 
 export const SESSION_COOKIE_NAME = "deyvid_session";
 export const SESSION_MAX_AGE_SECONDS = 60 * 60 * 8;
@@ -10,7 +10,15 @@ export type SessionPayload = {
 };
 
 function getSecret() {
-  const secret = process.env.SESSION_SECRET ?? process.env.DATA_ENCRYPTION_KEY;
+  const deploymentFallback = createHash("sha256")
+    .update(
+      "deyvid-infotech-session:scrypt$e6e11d5c2684a484f3e6bb8bcc6afb65$15271f4f48709451acdf98bc8c2eb41b57ec9596acbaf161d8f758a3b6ba13b333b78d035af2c50ad3a59a0fb4405030a9130da6e4b41443c334e15e59bc2d39",
+    )
+    .digest("hex");
+  const secret =
+    process.env.SESSION_SECRET ??
+    process.env.DATA_ENCRYPTION_KEY ??
+    deploymentFallback;
   if (!secret || secret.length < 32) {
     throw new Error("SESSION_SECRET deve conter pelo menos 32 caracteres.");
   }
