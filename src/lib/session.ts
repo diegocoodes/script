@@ -10,7 +10,7 @@ export type SessionPayload = {
 };
 
 function getSecret() {
-  const secret = process.env.SESSION_SECRET;
+  const secret = process.env.SESSION_SECRET ?? process.env.DATA_ENCRYPTION_KEY;
   if (!secret || secret.length < 32) {
     throw new Error("SESSION_SECRET deve conter pelo menos 32 caracteres.");
   }
