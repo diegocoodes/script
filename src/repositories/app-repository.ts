@@ -276,22 +276,6 @@ export async function getCompany(): Promise<CompanyView> {
   }
 }
 
-export async function getStartCounts() {
-  try {
-    const [customers, orders] = await Promise.all([
-      prisma.customer.count(),
-      prisma.serviceOrder.count(),
-    ]);
-    return { customers, orders };
-  } catch (error) {
-    reportFallback("contadores do início", error);
-    return {
-      customers: demoAppData.customers.length,
-      orders: demoAppData.orders.length,
-    };
-  }
-}
-
 export async function getOrderById(
   idOrNumber: string,
 ): Promise<ServiceOrderView | null> {

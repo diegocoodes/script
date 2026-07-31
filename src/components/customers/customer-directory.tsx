@@ -2,13 +2,31 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ExternalLink, MessageCircle, Search, UsersRound } from "lucide-react";
+import {
+  ExternalLink,
+  LoaderCircle,
+  MessageCircle,
+  Search,
+  Trash2,
+  UsersRound,
+} from "lucide-react";
+import { toast } from "sonner";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import {
   CustomerDocumentActions,
   type PreferredDocument,
 } from "@/components/customers/customer-document-actions";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -30,20 +48,53 @@ export function CustomerDirectory({
   company: CompanyView;
   preferredDocument?: PreferredDocument;
 }) {
+  const [customerItems, setCustomerItems] = useState(customers);
   const [search, setSearch] = useState("");
+  const [customerToDelete, setCustomerToDelete] =
+    useState<CustomerView | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const debouncedSearch = useDebouncedValue(search);
   const filteredCustomers = useMemo(() => {
     const query = debouncedSearch.trim().toLocaleLowerCase("pt-BR");
-    if (!query) return customers;
-    return customers.filter((customer) =>
+    if (!query) return customerItems;
+    return customerItems.filter((customer) =>
       [customer.name, customer.document, customer.phone, customer.whatsapp]
         .filter(Boolean)
         .some((value) => value?.toLocaleLowerCase("pt-BR").includes(query)),
     );
-  }, [customers, debouncedSearch]);
+  }, [customerItems, debouncedSearch]);
+
+  async function deleteCustomer() {
+    if (!customerToDelete) return;
+    setDeleting(true);
+    try {
+      const response = await fetch(`/api/customers/${customerToDelete.id}`, {
+        method: "DELETE",
+      });
+      const result = (await response.json()) as { message?: string };
+      if (!response.ok) {
+        throw new Error(result.message ?? "Não foi possível excluir o cliente.");
+      }
+
+      setCustomerItems((items) =>
+        items.filter((customer) => customer.id !== customerToDelete.id),
+      );
+      toast.success("Cliente excluído com sucesso.");
+      setCustomerToDelete(null);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível excluir o cliente.",
+      );
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_8px_30px_rgb(15_23_42/0.04)]">
+    <>
+      <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_8px_30px_rgb(15_23_42/0.04)]">
       <div className="border-b border-slate-100 p-4 sm:p-5">
         <div className="relative max-w-md">
           <label htmlFor="customer-search" className="sr-only">
@@ -181,6 +232,17 @@ export function CustomerDirectory({
                         >
                           <ExternalLink aria-hidden="true" className="size-4" />
                         </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label={`Excluir ${customer.name}`}
+                          onClick={() => setCustomerToDelete(customer)}
+                        >
+                          <Trash2
+                            aria-hidden="true"
+                            className="size-4 text-red-600"
+                          />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -205,6 +267,7 @@ export function CustomerDirectory({
                     <Button
                       variant="outline"
                       size="icon-lg"
+                      className="size-11"
                       nativeButton={false}
                       aria-label={`Conversar com ${customer.name} no WhatsApp`}
                       render={
@@ -243,11 +306,76 @@ export function CustomerDirectory({
                     mobile
                   />
                 </div>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <Button
+                    variant="outline"
+                    className="min-h-11"
+                    nativeButton={false}
+                    render={
+                      <Link
+                        href={`/ordens-servico?q=${encodeURIComponent(
+                          customer.name,
+                        )}`}
+                      />
+                    }
+                  >
+                    <ExternalLink aria-hidden="true" className="size-4" />
+                    Ver ordens
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    className="min-h-11"
+                    onClick={() => setCustomerToDelete(customer)}
+                  >
+                    <Trash2 aria-hidden="true" className="size-4" />
+                    Excluir
+                  </Button>
+                </div>
               </article>
             ))}
           </div>
         </>
       )}
-    </div>
+      </div>
+
+      <AlertDialog
+        open={Boolean(customerToDelete)}
+        onOpenChange={(open) => {
+          if (!open && !deleting) setCustomerToDelete(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir cliente?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {customerToDelete
+                ? `O cliente ${customerToDelete.name} e todos os equipamentos, ordens e documentos vinculados serão apagados.`
+                : "Os dados vinculados a este cliente serão apagados."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting} className="min-h-11">
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={deleting}
+              onClick={deleteCustomer}
+              className="min-h-11"
+            >
+              {deleting ? (
+                <LoaderCircle
+                  aria-hidden="true"
+                  className="size-4 animate-spin"
+                />
+              ) : (
+                <Trash2 aria-hidden="true" className="size-4" />
+              )}
+              {deleting ? "Excluindo…" : "Excluir definitivamente"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

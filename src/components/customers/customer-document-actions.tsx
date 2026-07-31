@@ -4,6 +4,7 @@ import { useState } from "react";
 import { FileText, LoaderCircle, ReceiptText, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { downloadCustomerDocumentPdf } from "@/services/pdf/customer-document-pdf";
 import { downloadServiceOrderPdf } from "@/services/pdf/service-order-pdf";
 import type { CompanyView, CustomerView, ServiceOrderView } from "@/types/domain";
@@ -77,7 +78,10 @@ export function CustomerDocumentActions({
             type="button"
             variant={active ? "secondary" : "outline"}
             size={mobile ? "default" : "icon-sm"}
-            className={active ? "border-blue-200 bg-blue-50 text-blue-700" : undefined}
+            className={cn(
+              active && "border-blue-200 bg-blue-50 text-blue-700",
+              mobile && "min-h-11",
+            )}
             aria-label={`Baixar ${document.label} de ${customer.name}`}
             title={
               customer.latestOrderId
