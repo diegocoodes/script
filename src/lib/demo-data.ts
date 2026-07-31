@@ -183,6 +183,9 @@ const baseOrder = {
   customerDocument: null,
   customerPhone: null,
   customerWhatsapp: null,
+  customerAddress: null,
+  customerCity: null,
+  customerState: null,
   equipmentSerialNumber: null,
   equipmentColor: null,
   deliveredAccessories: null,
@@ -201,8 +204,6 @@ const baseOrder = {
   completedAt: null,
   pickedUpAt: null,
   technicianName: "Deyvid Silva",
-  clientSignature: null,
-  technicianSignature: null,
 };
 
 export const demoOrders: ServiceOrderView[] = [

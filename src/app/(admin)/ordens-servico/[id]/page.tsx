@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import {
   CalendarClock,
   CircleDollarSign,
-  ClipboardList,
   FileText,
   Laptop,
   MessageCircle,
@@ -13,7 +12,6 @@ import {
 } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { OrderStatusControl } from "@/components/service-orders/order-status-control";
-import { OrderTimeline } from "@/components/service-orders/order-timeline";
 import { StatusBadge } from "@/components/service-orders/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -107,7 +105,7 @@ export default async function ServiceOrderDetailPage({
               }
             >
               <FileText aria-hidden="true" className="size-4" />
-              Visualizar e gerar PDF
+              Gerar PDF da ordem
             </Button>
           </>
         }
@@ -130,7 +128,7 @@ export default async function ServiceOrderDetailPage({
         )}
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <div>
         <div className="space-y-5">
           <div className="grid gap-5 lg:grid-cols-2">
             <Card className="gap-0 border-slate-200/80 py-0 shadow-[0_8px_30px_rgb(15_23_42/0.04)]">
@@ -318,36 +316,6 @@ export default async function ServiceOrderDetailPage({
           </Card>
         </div>
 
-        <aside className="space-y-5">
-          <Card className="gap-0 border-slate-200/80 py-0 shadow-[0_8px_30px_rgb(15_23_42/0.04)]">
-            <CardHeader className="border-b border-slate-100 px-5 py-4">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <ClipboardList
-                  aria-hidden="true"
-                  className="size-4 text-blue-600"
-                />
-                Linha do tempo
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-5">
-              <OrderTimeline order={order} />
-            </CardContent>
-          </Card>
-
-          <Card className="gap-0 border-slate-200/80 py-0 shadow-[0_8px_30px_rgb(15_23_42/0.04)]">
-            <CardHeader className="border-b border-slate-100 px-5 py-4">
-              <CardTitle className="text-base">Responsável técnico</CardTitle>
-            </CardHeader>
-            <CardContent className="p-5">
-              <p className="text-sm font-semibold text-slate-800">
-                {order.technicianName || "Ainda não definido"}
-              </p>
-              <p className="mt-1 text-xs text-slate-400">
-                Técnico vinculado ao atendimento
-              </p>
-            </CardContent>
-          </Card>
-        </aside>
       </div>
     </>
   );

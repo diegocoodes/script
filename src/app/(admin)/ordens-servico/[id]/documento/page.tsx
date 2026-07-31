@@ -26,9 +26,9 @@ export default async function ServiceOrderDocumentPage({
     <>
       <div className="no-print">
         <PageHeader
-          eyebrow="Pré-visualização A4"
+          eyebrow="Etapa 1 de 3 · PDF em uma página"
           title={`Documento ${order.number}`}
-          description="Confira as informações e escolha o formato de impressão ou download."
+          description="Gere a ordem de serviço e continue para o termo de garantia."
         />
       </div>
       <OrderDocumentWorkspace

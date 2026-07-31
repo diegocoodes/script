@@ -11,7 +11,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getCustomers, getOrders } from "@/repositories/app-repository";
+import { getStartCounts } from "@/repositories/app-repository";
 
 export const metadata: Metadata = { title: "Início" };
 export const dynamic = "force-dynamic";
@@ -27,7 +27,7 @@ const actions = [
   },
   {
     title: "Ordem de serviço",
-    description: "Registre equipamento, defeito, valores e assinaturas.",
+    description: "Registre equipamento, defeito, serviço, valores e datas.",
     href: "/ordens-servico/nova",
     icon: FilePlus2,
     tone: "bg-sky-50 text-sky-700",
@@ -51,8 +51,8 @@ const actions = [
   },
   {
     title: "Comprovante de entrega",
-    description: "Baixe a confirmação de retirada do equipamento.",
-    href: "/clientes?documento=entrega",
+    description: "Preencha os dados da entrega e gere o PDF separado.",
+    href: "/comprovantes/novo",
     icon: FileCheck2,
     tone: "bg-amber-50 text-amber-700",
     featured: false,
@@ -60,7 +60,7 @@ const actions = [
 ] as const;
 
 export default async function StartPage() {
-  const [customers, orders] = await Promise.all([getCustomers(), getOrders()]);
+  const counts = await getStartCounts();
 
   return (
     <>
@@ -81,11 +81,11 @@ export default async function StartPage() {
           </div>
           <div className="flex gap-3">
             <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-              <p className="text-2xl font-extrabold tabular-nums">{customers.length}</p>
+              <p className="text-2xl font-extrabold tabular-nums">{counts.customers}</p>
               <p className="text-xs text-slate-400">clientes</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-              <p className="text-2xl font-extrabold tabular-nums">{orders.length}</p>
+              <p className="text-2xl font-extrabold tabular-nums">{counts.orders}</p>
               <p className="text-xs text-slate-400">ordens</p>
             </div>
           </div>

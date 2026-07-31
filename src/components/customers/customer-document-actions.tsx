@@ -1,20 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { FileCheck2, FileText, LoaderCircle, ReceiptText, ShieldCheck } from "lucide-react";
+import { FileText, LoaderCircle, ReceiptText, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { downloadCustomerDocumentPdf } from "@/services/pdf/customer-document-pdf";
 import { downloadServiceOrderPdf } from "@/services/pdf/service-order-pdf";
 import type { CompanyView, CustomerView, ServiceOrderView } from "@/types/domain";
 
-export type PreferredDocument = "ordem" | "garantia" | "recibo" | "entrega";
+export type PreferredDocument = "ordem" | "garantia" | "recibo";
 
 const documents = [
   { key: "ordem", label: "Ordem de serviço", shortLabel: "OS", icon: FileText, type: "SERVICE_ORDER" },
   { key: "garantia", label: "Termo de garantia", shortLabel: "Garantia", icon: ShieldCheck, type: "WARRANTY_TERM" },
   { key: "recibo", label: "Recibo", shortLabel: "Recibo", icon: ReceiptText, type: "PAYMENT_RECEIPT" },
-  { key: "entrega", label: "Comprovante de entrega", shortLabel: "Entrega", icon: FileCheck2, type: "DELIVERY_RECEIPT" },
 ] as const;
 
 export function CustomerDocumentActions({
@@ -46,7 +45,7 @@ export function CustomerDocumentActions({
 
       const fileName =
         document.type === "SERVICE_ORDER"
-          ? await downloadServiceOrderPdf(order, company, "customer")
+          ? await downloadServiceOrderPdf(order, company)
           : await downloadCustomerDocumentPdf(document.type, order, company);
 
       toast.success(`${document.label} baixado com sucesso.`);

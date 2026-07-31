@@ -2,28 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  Download,
-  FileCheck2,
-  LoaderCircle,
-  Printer,
-} from "lucide-react";
+import { ArrowLeft, Download, FileCheck2, LoaderCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ServiceOrderDocument } from "@/components/documents/service-order-document";
 import { Button } from "@/components/ui/button";
-import {
-  downloadServiceOrderPdf,
-  type PrintMode,
-} from "@/services/pdf/service-order-pdf";
+import { downloadServiceOrderPdf } from "@/services/pdf/service-order-pdf";
 import type { CompanyView, ServiceOrderView } from "@/types/domain";
-
-const modeLabels: Record<PrintMode, string> = {
-  complete: "Documento completo",
-  "two-copies": "Duas vias",
-  customer: "Somente via do cliente",
-  company: "Somente via da assistência",
-};
 
 export function OrderDocumentWorkspace({
   order,
@@ -34,25 +19,15 @@ export function OrderDocumentWorkspace({
   company: CompanyView;
   generatedAt: string;
 }) {
-  const [mode, setMode] = useState<PrintMode>("complete");
+  const router = useRouter();
   const [downloading, setDownloading] = useState(false);
-  const copies =
-    mode === "two-copies"
-      ? ["Via do cliente", "Via da assistência"]
-      : [
-          mode === "customer"
-            ? "Via do cliente"
-            : mode === "company"
-              ? "Via da assistência"
-              : undefined,
-        ];
 
   async function download() {
     setDownloading(true);
     try {
-      const fileName = await downloadServiceOrderPdf(order, company, mode);
+      const fileName = await downloadServiceOrderPdf(order, company);
       toast.success("PDF gerado e baixado com sucesso.");
-      void fetch("/api/documents", {
+      await fetch("/api/documents", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -61,6 +36,7 @@ export function OrderDocumentWorkspace({
           fileName,
         }),
       });
+      router.push(`/ordens-servico/${order.id}/garantia`);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Não foi possível gerar o PDF.",
@@ -82,34 +58,11 @@ export function OrderDocumentWorkspace({
               Documento pronto para conferência
             </p>
             <p className="text-xs text-slate-400">
-              Revise os dados antes de imprimir ou baixar.
+              O arquivo será gerado em uma única página para impressão.
             </p>
           </div>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <label htmlFor="print-mode" className="sr-only">
-            Formato da impressão
-          </label>
-          <select
-            id="print-mode"
-            value={mode}
-            onChange={(event) => setMode(event.target.value as PrintMode)}
-            className="h-10 rounded-lg border border-input bg-white px-3 text-sm font-medium shadow-xs"
-          >
-            {Object.entries(modeLabels).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          <Button
-            variant="outline"
-            className="min-h-10"
-            onClick={() => window.print()}
-          >
-            <Printer aria-hidden="true" className="size-4" />
-            Imprimir
-          </Button>
           <Button
             className="min-h-10"
             onClick={download}
@@ -123,7 +76,7 @@ export function OrderDocumentWorkspace({
             ) : (
               <Download aria-hidden="true" className="size-4" />
             )}
-            {downloading ? "Gerando PDF…" : "Baixar PDF"}
+            {downloading ? "Gerando PDF…" : "Gerar PDF e continuar"}
           </Button>
         </div>
       </div>
@@ -138,20 +91,12 @@ export function OrderDocumentWorkspace({
         </Button>
       </div>
 
-      <div className="space-y-8 bg-slate-200/50 p-0 sm:rounded-2xl sm:p-5 lg:p-8">
-        {copies.map((copyLabel, index) => (
-          <div
-            key={`${copyLabel ?? "complete"}-${index}`}
-            className={index < copies.length - 1 ? "break-after-page" : undefined}
-          >
-            <ServiceOrderDocument
-              order={order}
-              company={company}
-              generatedAt={generatedAt}
-              copyLabel={copyLabel}
-            />
-          </div>
-        ))}
+      <div className="bg-slate-200/50 p-0 sm:rounded-2xl sm:p-5 lg:p-8">
+        <ServiceOrderDocument
+          order={order}
+          company={company}
+          generatedAt={generatedAt}
+        />
       </div>
     </div>
   );

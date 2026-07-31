@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { customerSchema, type CustomerInput } from "@/schemas/customer";
-import { maskDocument, maskPhone } from "@/utils/formatters";
+import { maskDocument, maskPhone, onlyDigits } from "@/utils/formatters";
 
 export function CustomerForm({
   compact = false,
@@ -27,6 +27,7 @@ export function CustomerForm({
 }) {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [lookingUpPostalCode, setLookingUpPostalCode] = useState(false);
   const {
     register,
     handleSubmit,
@@ -40,12 +41,50 @@ export function CustomerForm({
       phone: "",
       whatsapp: "",
       email: "",
+      postalCode: "",
       address: "",
       city: "",
       state: "",
       notes: "",
     },
   });
+
+  async function lookupPostalCode(value: string) {
+    const postalCode = onlyDigits(value);
+    if (postalCode.length !== 8) return;
+
+    setLookingUpPostalCode(true);
+    try {
+      const response = await fetch(
+        `https://viacep.com.br/ws/${postalCode}/json/`,
+      );
+      const address = (await response.json()) as {
+        erro?: boolean;
+        logradouro?: string;
+        bairro?: string;
+        localidade?: string;
+        uf?: string;
+      };
+      if (!response.ok || address.erro) {
+        throw new Error("CEP não encontrado.");
+      }
+
+      setValue(
+        "address",
+        [address.logradouro, address.bairro].filter(Boolean).join(" - "),
+        { shouldDirty: true },
+      );
+      setValue("city", address.localidade ?? "", { shouldDirty: true });
+      setValue("state", address.uf ?? "", { shouldDirty: true });
+      toast.success("Endereço preenchido pelo CEP.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Não foi possível buscar o CEP.",
+      );
+    } finally {
+      setLookingUpPostalCode(false);
+    }
+  }
 
   async function submit(input: CustomerInput) {
     setServerError(null);
@@ -180,7 +219,34 @@ export function CustomerForm({
           />
         </div>
 
-        <div className="sm:col-span-2">
+        <div>
+          <Label htmlFor="customer-postal-code">CEP</Label>
+          <div className="relative">
+            <Input
+              id="customer-postal-code"
+              inputMode="numeric"
+              placeholder="00000-000"
+              maxLength={9}
+              disabled={lookingUpPostalCode}
+              {...register("postalCode", {
+                onChange: (event) => {
+                  const digits = onlyDigits(event.target.value).slice(0, 8);
+                  const masked = digits.replace(/(\d{5})(\d)/, "$1-$2");
+                  setValue("postalCode", masked);
+                },
+                onBlur: (event) => lookupPostalCode(event.target.value),
+              })}
+            />
+            {lookingUpPostalCode && (
+              <LoaderCircle
+                aria-hidden="true"
+                className="absolute right-3 top-1/2 size-4 -translate-y-1/2 animate-spin text-blue-600"
+              />
+            )}
+          </div>
+        </div>
+
+        <div>
           <Label htmlFor="customer-address">Endereço</Label>
           <Input
             id="customer-address"

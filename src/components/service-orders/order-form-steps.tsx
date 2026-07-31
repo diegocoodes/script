@@ -3,7 +3,6 @@
 import { Plus } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 import { FieldError } from "@/components/forms/field-error";
-import { SignaturePad } from "@/components/forms/signature-pad";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,6 +45,7 @@ export function CustomerStep({
             onChange: () => {
               form.setValue("equipmentName", "");
               form.setValue("equipmentDescription", "");
+              form.setValue("equipmentAccessories", "");
             },
           })}
         >
@@ -123,6 +123,17 @@ export function EquipmentStep({ form }: { form: Form }) {
           O equipamento será cadastrado automaticamente ao salvar a ordem de
           serviço.
         </p>
+      </div>
+      <div>
+        <Label htmlFor="order-equipment-accessories">
+          Acessórios entregues
+        </Label>
+        <Input
+          id="order-equipment-accessories"
+          className="mt-2"
+          placeholder="Ex.: carregador, cabo, capa e bateria"
+          {...form.register("equipmentAccessories")}
+        />
       </div>
     </div>
   );
@@ -342,6 +353,19 @@ export function ScheduleStep({ form }: { form: Form }) {
         />
       </div>
       <div>
+        <Label htmlFor="order-entry-time">Hora da entrada *</Label>
+        <Input
+          id="order-entry-time"
+          type="time"
+          className="mt-2"
+          {...form.register("entryTime")}
+        />
+        <FieldError
+          id="order-entry-time-error"
+          message={form.formState.errors.entryTime?.message}
+        />
+      </div>
+      <div>
         <Label htmlFor="order-expected-date">Previsão de entrega</Label>
         <Input
           id="order-expected-date"
@@ -351,29 +375,11 @@ export function ScheduleStep({ form }: { form: Form }) {
         />
       </div>
       <div>
-        <Label htmlFor="order-completed-date">Data de conclusão</Label>
-        <Input
-          id="order-completed-date"
-          type="date"
-          className="mt-2"
-          {...form.register("completedAt")}
-        />
-      </div>
-      <div>
-        <Label htmlFor="order-pickup-date">Data de retirada</Label>
-        <Input
-          id="order-pickup-date"
-          type="date"
-          className="mt-2"
-          {...form.register("pickedUpAt")}
-        />
-      </div>
-      <div>
-        <Label htmlFor="order-technician">Técnico responsável</Label>
+        <Label htmlFor="order-technician">Atendente responsável</Label>
         <Input
           id="order-technician"
           className="mt-2"
-          placeholder="Nome do técnico"
+          placeholder="Nome do atendente"
           {...form.register("technicianName")}
         />
       </div>
@@ -404,35 +410,6 @@ export function ScheduleStep({ form }: { form: Form }) {
             </option>
           ))}
         </select>
-      </div>
-    </div>
-  );
-}
-
-export function SignaturesStep({ form }: { form: Form }) {
-  return (
-    <div>
-      <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-5 text-amber-900">
-        As assinaturas são opcionais na abertura e podem ser coletadas depois.
-        Ao assinar, o cliente confirma os dados e acessórios descritos.
-      </div>
-      <div className="grid gap-5 xl:grid-cols-2">
-        <SignaturePad
-          id="client-signature"
-          label="Assinatura do cliente"
-          value={form.watch("clientSignature")}
-          onChange={(value) =>
-            form.setValue("clientSignature", value, { shouldDirty: true })
-          }
-        />
-        <SignaturePad
-          id="technician-signature"
-          label="Assinatura do técnico"
-          value={form.watch("technicianSignature")}
-          onChange={(value) =>
-            form.setValue("technicianSignature", value, { shouldDirty: true })
-          }
-        />
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ export const customerSchema = z.object({
     .email("Informe um e-mail válido.")
     .optional()
     .or(z.literal("")),
+  postalCode: z.string().trim().max(9).optional().or(z.literal("")),
   address: z.string().trim().max(180).optional().or(z.literal("")),
   city: z.string().trim().max(80).optional().or(z.literal("")),
   state: z.string().trim().max(2).optional().or(z.literal("")),

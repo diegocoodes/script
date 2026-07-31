@@ -94,6 +94,9 @@ function toOrderView(order: OrderWithRelations): ServiceOrderView {
     customerDocument: order.customer.document,
     customerPhone: order.customer.phone,
     customerWhatsapp: order.customer.whatsapp,
+    customerAddress: order.customer.address,
+    customerCity: order.customer.city,
+    customerState: order.customer.state,
     equipmentId: order.equipmentId,
     equipmentType: order.equipment.type,
     equipmentLabel:
@@ -128,8 +131,6 @@ function toOrderView(order: OrderWithRelations): ServiceOrderView {
     pickedUpAt: order.pickedUpAt?.toISOString() ?? null,
     technicianName:
       order.technician?.name ?? order.technicianDisplayName ?? null,
-    clientSignature: order.clientSignature,
-    technicianSignature: order.technicianSignature,
     createdAt: order.createdAt.toISOString(),
     updatedAt: order.updatedAt.toISOString(),
   };
@@ -272,6 +273,22 @@ export async function getCompany(): Promise<CompanyView> {
   } catch (error) {
     reportFallback("empresa", error);
     return demoAppData.company;
+  }
+}
+
+export async function getStartCounts() {
+  try {
+    const [customers, orders] = await Promise.all([
+      prisma.customer.count(),
+      prisma.serviceOrder.count(),
+    ]);
+    return { customers, orders };
+  } catch (error) {
+    reportFallback("contadores do início", error);
+    return {
+      customers: demoAppData.customers.length,
+      orders: demoAppData.orders.length,
+    };
   }
 }
 

@@ -2,9 +2,9 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import type { ServiceOrderInput } from "@/schemas/service-order";
 
-function optionalDate(value: string | undefined) {
+function optionalDate(value: string | undefined, time = "12:00") {
   if (!value) return null;
-  return new Date(`${value}T12:00:00`);
+  return new Date(`${value}T${time}:00`);
 }
 
 async function createInTransaction(input: ServiceOrderInput) {
@@ -16,6 +16,7 @@ async function createInTransaction(input: ServiceOrderInput) {
           type: "OTHER",
           brand: input.equipmentName,
           model: "",
+          deliveredAccessories: input.equipmentAccessories || null,
           reportedDefect: input.reportedDefect,
           notes: input.equipmentDescription,
         },
@@ -74,15 +75,12 @@ async function createInTransaction(input: ServiceOrderInput) {
           paidValue: input.paidValue,
           pendingValue,
           paymentMethod: input.paymentMethod || null,
-          entryDate: optionalDate(input.entryDate) ?? new Date(),
+          entryDate:
+            optionalDate(input.entryDate, input.entryTime) ?? new Date(),
           expectedDeliveryDate: optionalDate(input.expectedDeliveryDate),
-          completedAt: optionalDate(input.completedAt),
-          pickedUpAt: optionalDate(input.pickedUpAt),
           technicianDisplayName: input.technicianName || null,
           status: input.status,
           priority: input.priority,
-          clientSignature: input.clientSignature || null,
-          technicianSignature: input.technicianSignature || null,
         },
         include: {
           customer: true,

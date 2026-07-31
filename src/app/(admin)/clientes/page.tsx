@@ -20,7 +20,7 @@ export default async function CustomersPage({
     getCustomers(),
     getCompany(),
   ]);
-  const preferredDocument = ["ordem", "garantia", "recibo", "entrega"].includes(
+  const preferredDocument = ["ordem", "garantia", "recibo"].includes(
     documento ?? "",
   )
     ? (documento as PreferredDocument)

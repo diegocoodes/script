@@ -11,7 +11,6 @@ import {
   Laptop,
   LoaderCircle,
   Save,
-  Signature,
   UserRound,
   Wrench,
 } from "lucide-react";
@@ -25,7 +24,6 @@ import {
   EquipmentStep,
   ProblemStep,
   ScheduleStep,
-  SignaturesStep,
   ValuesStep,
 } from "@/components/service-orders/order-form-steps";
 import { Button } from "@/components/ui/button";
@@ -67,14 +65,9 @@ const steps = [
     icon: CircleDollarSign,
   },
   {
-    title: "Prazos",
-    description: "Datas, status e prioridade",
+    title: "Datas",
+    description: "Entrada, previsão e responsável",
     icon: ClipboardCheck,
-  },
-  {
-    title: "Assinaturas",
-    description: "Confirmação das partes",
-    icon: Signature,
   },
 ] as const;
 
@@ -83,19 +76,20 @@ const stepFields: Array<Array<FieldPath<ServiceOrderInput>>> = [
   ["equipmentName", "equipmentDescription"],
   ["reportedDefect", "requestedService"],
   ["serviceValue", "partsValue", "discount", "surcharge", "paidValue"],
-  ["entryDate", "status", "priority"],
-  ["clientSignature", "technicianSignature"],
+  ["entryDate", "entryTime", "status", "priority"],
 ];
 
 export function ServiceOrderForm({
   initialCustomers,
   initialCustomerId,
   today,
+  entryTime,
   expectedDate,
 }: {
   initialCustomers: CustomerView[];
   initialCustomerId?: string;
   today: string;
+  entryTime: string;
   expectedDate: string;
 }) {
   const router = useRouter();
@@ -117,6 +111,7 @@ export function ServiceOrderForm({
       customerId: validInitialCustomerId ?? "",
       equipmentName: "",
       equipmentDescription: "",
+      equipmentAccessories: "",
       reportedDefect: "",
       technicalDiagnosis: "",
       requestedService: "",
@@ -131,14 +126,11 @@ export function ServiceOrderForm({
       paidValue: 0,
       paymentMethod: "",
       entryDate: today,
+      entryTime,
       expectedDeliveryDate: expectedDate,
-      completedAt: "",
-      pickedUpAt: "",
       technicianName: "",
       status: "RECEIVED",
       priority: "NORMAL",
-      clientSignature: "",
-      technicianSignature: "",
     },
   });
   useEffect(() => {
@@ -218,6 +210,7 @@ export function ServiceOrderForm({
     });
     form.setValue("equipmentName", "");
     form.setValue("equipmentDescription", "");
+    form.setValue("equipmentAccessories", "");
     setCustomerDialogOpen(false);
     setCurrentStep(1);
   }
@@ -329,7 +322,6 @@ export function ServiceOrderForm({
               {currentStep === 2 && <ProblemStep form={form} />}
               {currentStep === 3 && <ValuesStep form={form} />}
               {currentStep === 4 && <ScheduleStep form={form} />}
-              {currentStep === 5 && <SignaturesStep form={form} />}
             </div>
 
             <div className="flex flex-col-reverse gap-2 border-t border-slate-100 bg-slate-50/60 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">

@@ -66,6 +66,9 @@ export type ServiceOrderView = {
   customerDocument: string | null;
   customerPhone: string | null;
   customerWhatsapp: string | null;
+  customerAddress: string | null;
+  customerCity: string | null;
+  customerState: string | null;
   equipmentId: string;
   equipmentType: string;
   equipmentLabel: string;
@@ -98,8 +101,6 @@ export type ServiceOrderView = {
   completedAt: string | null;
   pickedUpAt: string | null;
   technicianName: string | null;
-  clientSignature: string | null;
-  technicianSignature: string | null;
   createdAt: string;
   updatedAt: string;
 };

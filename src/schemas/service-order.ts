@@ -19,6 +19,12 @@ export const serviceOrderSchema = z.object({
     .trim()
     .min(3, "Descreva o equipamento.")
     .max(1000, "A descrição deve ter no máximo 1000 caracteres."),
+  equipmentAccessories: z
+    .string()
+    .trim()
+    .max(600, "Os acessórios devem ter no máximo 600 caracteres.")
+    .optional()
+    .or(z.literal("")),
   reportedDefect: z.string().trim().min(8, "Descreva o defeito relatado."),
   technicalDiagnosis: z.string().trim().optional().or(z.literal("")),
   requestedService: z.string().trim().min(4, "Informe o serviço solicitado."),
@@ -33,14 +39,11 @@ export const serviceOrderSchema = z.object({
   paidValue: moneyField,
   paymentMethod: z.enum(PAYMENT_METHODS).optional().or(z.literal("")),
   entryDate: z.string().min(1, "Informe a data de entrada."),
+  entryTime: z.string().min(1, "Informe a hora da entrada."),
   expectedDeliveryDate: z.string().optional().or(z.literal("")),
-  completedAt: z.string().optional().or(z.literal("")),
-  pickedUpAt: z.string().optional().or(z.literal("")),
   technicianName: z.string().trim().optional().or(z.literal("")),
   status: z.enum(SERVICE_ORDER_STATUSES),
   priority: z.enum(SERVICE_ORDER_PRIORITIES),
-  clientSignature: z.string().optional().or(z.literal("")),
-  technicianSignature: z.string().optional().or(z.literal("")),
 });
 
 export type ServiceOrderInput = z.infer<typeof serviceOrderSchema>;

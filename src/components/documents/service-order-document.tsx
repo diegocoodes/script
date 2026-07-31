@@ -46,30 +46,9 @@ function DocumentSection({
   );
 }
 
-function SignatureBlock({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | null;
-}) {
-  const typedName = value?.startsWith("typed:") ? value.slice(6) : null;
-  const image = value?.startsWith("data:image") ? value : null;
-
+function SignatureBlock({ label }: { label: string }) {
   return (
     <div className="pt-10 text-center">
-      <div className="flex h-14 items-end justify-center">
-        {image && (
-          // O conteúdo é um data URL capturado pelo próprio canvas.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={image} alt="" className="max-h-14 max-w-48 object-contain" />
-        )}
-        {typedName && (
-          <span className="pb-1 font-serif text-sm italic text-slate-800">
-            {typedName}
-          </span>
-        )}
-      </div>
       <div className="mx-auto w-full max-w-56 border-t border-slate-500 pt-1.5">
         <p className="text-[8px] font-bold uppercase tracking-wider text-slate-500">
           {label}
@@ -291,14 +270,8 @@ export function ServiceOrderDocument({
           estejam expressamente relacionados neste documento.
         </p>
         <div className="grid grid-cols-2 gap-10">
-          <SignatureBlock
-            label="Assinatura do cliente"
-            value={order.clientSignature}
-          />
-          <SignatureBlock
-            label="Assinatura do responsável técnico"
-            value={order.technicianSignature}
-          />
+          <SignatureBlock label="Assinatura do cliente" />
+          <SignatureBlock label="Assinatura do atendente" />
         </div>
       </section>
 
