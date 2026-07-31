@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Cpu, FileCheck2, ShieldCheck } from "lucide-react";
+import { FileCheck2, ShieldCheck } from "lucide-react";
 import { LoginForm } from "@/components/auth/login-form";
+import { BrandMark } from "@/components/layout/brand-mark";
 import { getCurrentSession } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Entrar" };
@@ -22,16 +23,8 @@ export default async function LoginPage() {
 
       <section className="relative w-full max-w-md">
         <div className="mb-7 flex flex-col items-center text-center text-white">
-          <span className="relative grid size-14 place-items-center rounded-2xl bg-blue-600 shadow-xl shadow-blue-950/60">
-            <Cpu aria-hidden="true" className="size-7" />
-            <span className="absolute -right-1 -top-1 size-3 rounded-full border-2 border-slate-950 bg-red-500" />
-          </span>
-          <h1 className="mt-4 text-xl font-extrabold tracking-tight">
-            Deyvid <span className="text-sky-400">Infotech</span>
-          </h1>
-          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-            Assistência técnica
-          </p>
+          <BrandMark className="justify-center" />
+          <h1 className="sr-only">Deyvid Infotech</h1>
         </div>
 
         <div className="rounded-3xl border border-white/10 bg-white p-6 shadow-[0_30px_100px_rgb(0_0_0/0.38)] sm:p-8">

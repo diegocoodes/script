@@ -110,7 +110,7 @@ model CompanySettings {
 model Customer {
   id            String         @id @default(uuid())
   name          String
-  document      String?        @unique
+  document      String?
   phone         String?
   whatsapp      String?
   email         String?
@@ -124,6 +124,8 @@ model Customer {
   updatedAt     DateTime       @updatedAt
 
   @@index([name])
+  @@index([document])
+  @@index([email])
   @@index([phone])
 }
 
