@@ -3,8 +3,11 @@ import Link from "next/link";
 import {
   ArrowRight,
   ClipboardCheck,
+  FilePlus2,
   FileCheck2,
+  ShoppingCart,
   UserPlus,
+  WalletCards,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -12,11 +15,32 @@ export const metadata: Metadata = { title: "Início" };
 
 const actions = [
   {
+    title: "Nova ordem de serviço",
+    description: "Abra um atendimento e registre valores recebidos do cliente.",
+    href: "/ordens-servico/nova",
+    icon: FilePlus2,
+    tone: "bg-emerald-50 text-emerald-700",
+  },
+  {
     title: "Cadastre seu cliente",
     description: "Comece por aqui e mantenha todos os atendimentos vinculados.",
     href: "/clientes/novo",
     icon: UserPlus,
     tone: "bg-blue-600 text-white shadow-blue-600/20",
+  },
+  {
+    title: "Registrar uma compra",
+    description: "Informe o item comprado e quanto a empresa gastou.",
+    href: "/compras",
+    icon: ShoppingCart,
+    tone: "bg-red-50 text-red-700",
+  },
+  {
+    title: "Ver financeiro",
+    description: "Confira ganhos, gastos, saldo e valores ainda a receber.",
+    href: "/financeiro",
+    icon: WalletCards,
+    tone: "bg-violet-50 text-violet-700",
   },
   {
     title: "Comprovante de entrega",
@@ -58,7 +82,7 @@ export default function StartPage() {
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {actions.map((action) => {
             const Icon = action.icon;
             return (

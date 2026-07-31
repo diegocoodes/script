@@ -66,6 +66,14 @@ enum DocumentType {
   THANK_YOU
 }
 
+enum PurchaseCategory {
+  EQUIPMENT
+  PART
+  SUPPLY
+  SERVICE
+  OTHER
+}
+
 model User {
   id             String         @id @default(uuid())
   name           String
@@ -361,4 +369,20 @@ model AuditLog {
   @@index([entity, entityId])
   @@index([serviceOrderId, createdAt])
   @@index([userId, createdAt])
+}
+
+model BusinessPurchase {
+  id          String           @id @default(uuid())
+  description String
+  category    PurchaseCategory @default(EQUIPMENT)
+  quantity    Int              @default(1)
+  totalValue  Decimal          @db.Decimal(12, 2)
+  supplier    String?
+  purchasedAt DateTime         @default(now())
+  notes       String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([purchasedAt])
+  @@index([category, purchasedAt])
 }

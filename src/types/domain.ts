@@ -119,6 +119,38 @@ export type DashboardData = {
   weeklyFlow: Array<{ day: string; entradas: number; concluidas: number }>;
 };
 
+export type BusinessPurchaseView = {
+  id: string;
+  description: string;
+  category: string;
+  quantity: number;
+  totalValue: number;
+  supplier: string | null;
+  purchasedAt: string;
+  notes: string | null;
+  createdAt: string;
+};
+
+export type FinancialRevenueView = {
+  id: string;
+  number: string;
+  customerName: string;
+  paidValue: number;
+  pendingValue: number;
+  entryDate: string;
+};
+
+export type FinancialData = {
+  totalRevenue: number;
+  totalExpenses: number;
+  balance: number;
+  outstandingValue: number;
+  revenueCount: number;
+  purchaseCount: number;
+  recentRevenues: FinancialRevenueView[];
+  recentPurchases: BusinessPurchaseView[];
+};
+
 export type AppData = {
   company: CompanyView;
   customers: CustomerView[];

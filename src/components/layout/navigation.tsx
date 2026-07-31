@@ -7,7 +7,9 @@ import {
   FilePlus2,
   House,
   MonitorSmartphone,
+  ShoppingCart,
   UsersRound,
+  WalletCards,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +28,8 @@ const navigation = [
   },
   { label: "Clientes", href: "/clientes", icon: UsersRound },
   { label: "Equipamentos", href: "/equipamentos", icon: MonitorSmartphone },
+  { label: "Compras e gastos", href: "/compras", icon: ShoppingCart },
+  { label: "Financeiro", href: "/financeiro", icon: WalletCards },
 ] as const;
 
 export function Navigation({ onNavigate }: { onNavigate?: () => void }) {
