@@ -22,7 +22,7 @@ export function PageHeader({
         <h1 className="text-balance text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl">
           {title}
         </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+        <p className="mt-2 max-w-2xl text-[15px] leading-6 text-slate-600 sm:text-base sm:leading-7">
           {description}
         </p>
       </div>

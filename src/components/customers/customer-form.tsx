@@ -126,7 +126,7 @@ export function CustomerForm({
   }
 
   const content = (
-    <form onSubmit={handleSubmit(submit)} noValidate className="space-y-6">
+    <form onSubmit={handleSubmit(submit)} noValidate className="space-y-7">
       {serverError && (
         <div
           role="alert"
@@ -136,8 +136,8 @@ export function CustomerForm({
         </div>
       )}
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div className="sm:col-span-2">
+      <div className="grid gap-x-6 gap-y-5 md:grid-cols-2 [&_[data-slot=label]]:mb-2">
+        <div className="md:col-span-2">
           <Label htmlFor="customer-name">Nome completo *</Label>
           <Input
             id="customer-name"
@@ -281,7 +281,7 @@ export function CustomerForm({
           />
         </div>
 
-        <div className="sm:col-span-2">
+        <div className="md:col-span-2">
           <Label htmlFor="customer-notes">Observações</Label>
           <Textarea
             id="customer-notes"
@@ -292,15 +292,16 @@ export function CustomerForm({
         </div>
       </div>
 
-      <div className="flex flex-col-reverse gap-2 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+      <div className="flex flex-col-reverse gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:justify-end">
         {compact ? (
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={onCancel}>
             Cancelar
           </Button>
         ) : (
           <Button
             type="button"
             variant="outline"
+            className="w-full sm:w-auto"
             render={<Link href="/clientes" />}
           >
             <ArrowLeft aria-hidden="true" className="size-4" />
@@ -310,7 +311,7 @@ export function CustomerForm({
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="min-h-10 px-4"
+          className="min-h-11 w-full px-5 font-semibold shadow-sm sm:w-auto"
         >
           {isSubmitting ? (
             <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />
@@ -326,16 +327,16 @@ export function CustomerForm({
   if (compact) return content;
 
   return (
-    <Card className="mx-auto max-w-4xl border-slate-200/80 shadow-[0_12px_40px_rgb(15_23_42/0.05)]">
-      <CardHeader className="border-b border-slate-100">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <span className="grid size-9 place-items-center rounded-xl bg-blue-50 text-blue-600">
-            <UserRound aria-hidden="true" className="size-4" />
+    <Card className="mx-auto max-w-5xl gap-0 rounded-2xl border-slate-200/80 py-0 shadow-[0_12px_40px_rgb(15_23_42/0.06)]">
+      <CardHeader className="border-b border-slate-100 px-4 py-5 sm:px-6 sm:py-6">
+        <CardTitle className="flex items-center gap-3 text-lg font-bold text-slate-900 sm:text-xl">
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600 ring-1 ring-blue-100">
+            <UserRound aria-hidden="true" className="size-5" />
           </span>
           Dados do cliente
         </CardTitle>
       </CardHeader>
-      <CardContent>{content}</CardContent>
+      <CardContent className="px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-7">{content}</CardContent>
     </Card>
   );
 }

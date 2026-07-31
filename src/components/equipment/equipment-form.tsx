@@ -140,7 +140,7 @@ export function EquipmentForm({
           <Label htmlFor="equipment-customer">Cliente responsável *</Label>
           <select
             id="equipment-customer"
-            className="mt-2 flex h-10 w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm shadow-xs disabled:cursor-not-allowed disabled:opacity-50"
+            className="mt-2 flex h-11 w-full rounded-xl border border-input bg-white px-3.5 py-2 text-base text-slate-900 shadow-xs transition-colors hover:border-slate-400 focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-50 md:text-[15px]"
             aria-invalid={Boolean(errors.customerId)}
             {...register("customerId")}
           >
@@ -161,7 +161,7 @@ export function EquipmentForm({
           <Label htmlFor="equipment-type">Tipo de equipamento *</Label>
           <select
             id="equipment-type"
-            className="mt-2 flex h-10 w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm shadow-xs"
+            className="mt-2 flex h-11 w-full rounded-xl border border-input bg-white px-3.5 py-2 text-base text-slate-900 shadow-xs transition-colors hover:border-slate-400 focus:border-blue-500 md:text-[15px]"
             aria-invalid={Boolean(errors.type)}
             {...register("type")}
           >

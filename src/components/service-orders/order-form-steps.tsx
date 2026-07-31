@@ -38,7 +38,7 @@ export function CustomerStep({
         <Label htmlFor="order-customer">Cliente *</Label>
         <select
           id="order-customer"
-          className="mt-2 flex h-11 w-full rounded-lg border border-input bg-white px-3 text-sm shadow-xs"
+          className="mt-2 flex h-11 w-full rounded-xl border border-input bg-white px-3.5 text-base text-slate-900 shadow-xs transition-colors hover:border-slate-400 focus:border-blue-500 md:text-[15px]"
           aria-invalid={Boolean(error)}
           aria-describedby={error ? "order-customer-error" : undefined}
           {...form.register("customerId", {
@@ -296,7 +296,7 @@ export function ValuesStep({ form }: { form: Form }) {
           <Label htmlFor="order-payment-method">Forma de pagamento</Label>
           <select
             id="order-payment-method"
-            className="mt-2 flex h-10 w-full rounded-lg border border-input bg-white px-3 text-sm shadow-xs"
+            className="mt-2 flex h-11 w-full rounded-xl border border-input bg-white px-3.5 text-base text-slate-900 shadow-xs transition-colors hover:border-slate-400 focus:border-blue-500 md:text-[15px]"
             {...form.register("paymentMethod")}
           >
             <option value="">Selecione se houver pagamento</option>
@@ -387,7 +387,7 @@ export function ScheduleStep({ form }: { form: Form }) {
         <Label htmlFor="order-priority">Prioridade</Label>
         <select
           id="order-priority"
-          className="mt-2 flex h-10 w-full rounded-lg border border-input bg-white px-3 text-sm shadow-xs"
+          className="mt-2 flex h-11 w-full rounded-xl border border-input bg-white px-3.5 text-base text-slate-900 shadow-xs transition-colors hover:border-slate-400 focus:border-blue-500 md:text-[15px]"
           {...form.register("priority")}
         >
           {SERVICE_ORDER_PRIORITIES.map((priority) => (
@@ -401,7 +401,7 @@ export function ScheduleStep({ form }: { form: Form }) {
         <Label htmlFor="order-status">Status inicial</Label>
         <select
           id="order-status"
-          className="mt-2 flex h-10 w-full rounded-lg border border-input bg-white px-3 text-sm shadow-xs"
+          className="mt-2 flex h-11 w-full rounded-xl border border-input bg-white px-3.5 text-base text-slate-900 shadow-xs transition-colors hover:border-slate-400 focus:border-blue-500 md:text-[15px]"
           {...form.register("status")}
         >
           {SERVICE_ORDER_STATUSES.map((status) => (
