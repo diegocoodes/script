@@ -96,7 +96,8 @@ function toOrderView(order: OrderWithRelations): ServiceOrderView {
     customerWhatsapp: order.customer.whatsapp,
     equipmentId: order.equipmentId,
     equipmentType: order.equipment.type,
-    equipmentLabel: `${order.equipment.brand} ${order.equipment.model}`,
+    equipmentLabel:
+      `${order.equipment.brand} ${order.equipment.model}`.trim(),
     equipmentBrand: order.equipment.brand,
     equipmentModel: order.equipment.model,
     equipmentSerialNumber: order.equipment.serialNumber,

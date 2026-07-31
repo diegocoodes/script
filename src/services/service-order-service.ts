@@ -10,20 +10,16 @@ function optionalDate(value: string | undefined) {
 async function createInTransaction(input: ServiceOrderInput) {
   return prisma.$transaction(
     async (transaction) => {
-      const equipment = await transaction.equipment.findFirst({
-        where: { id: input.equipmentId, customerId: input.customerId },
+      const equipment = await transaction.equipment.create({
+        data: {
+          customerId: input.customerId,
+          type: "OTHER",
+          brand: input.equipmentName,
+          model: "",
+          reportedDefect: input.reportedDefect,
+          notes: input.equipmentDescription,
+        },
         select: { id: true },
-      });
-
-      if (!equipment) {
-        throw new Error(
-          "O equipamento selecionado não pertence ao cliente informado.",
-        );
-      }
-
-      await transaction.equipment.update({
-        where: { id: input.equipmentId },
-        data: { notes: input.equipmentDescription || null },
       });
 
       let company = await transaction.companySettings.findFirst({
@@ -62,7 +58,7 @@ async function createInTransaction(input: ServiceOrderInput) {
         data: {
           number,
           customerId: input.customerId,
-          equipmentId: input.equipmentId,
+          equipmentId: equipment.id,
           reportedDefect: input.reportedDefect,
           technicalDiagnosis: input.technicalDiagnosis || null,
           requestedService: input.requestedService,

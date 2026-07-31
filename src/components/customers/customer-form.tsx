@@ -66,7 +66,9 @@ export function CustomerForm({
         throw new Error(result.message ?? "Não foi possível salvar o cliente.");
       }
 
-      toast.success("Cliente cadastrado com sucesso.");
+      toast.success("Cadastro finalizado", {
+        description: "Cliente cadastrado com sucesso.",
+      });
       if (onCreated) {
         onCreated({ id: result.id, name: result.name });
       } else {

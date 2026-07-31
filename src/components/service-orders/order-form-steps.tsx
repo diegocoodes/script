@@ -17,7 +17,7 @@ import {
   statusConfig,
 } from "@/lib/constants";
 import type { ServiceOrderInput } from "@/schemas/service-order";
-import type { CustomerView, EquipmentView } from "@/types/domain";
+import type { CustomerView } from "@/types/domain";
 import { formatCurrency } from "@/utils/formatters";
 
 type Form = UseFormReturn<ServiceOrderInput>;
@@ -44,7 +44,7 @@ export function CustomerStep({
           aria-describedby={error ? "order-customer-error" : undefined}
           {...form.register("customerId", {
             onChange: () => {
-              form.setValue("equipmentId", "");
+              form.setValue("equipmentName", "");
               form.setValue("equipmentDescription", "");
             },
           })}
@@ -75,97 +75,54 @@ export function CustomerStep({
   );
 }
 
-export function EquipmentStep({
-  form,
-  equipment,
-  customerId,
-  onAdd,
-  onSelect,
-}: {
-  form: Form;
-  equipment: EquipmentView[];
-  customerId: string;
-  onAdd: () => void;
-  onSelect: (id: string) => void;
-}) {
-  const error = form.formState.errors.equipmentId?.message;
-  const available = equipment.filter(
-    (item) => !customerId || item.customerId === customerId,
-  );
+export function EquipmentStep({ form }: { form: Form }) {
+  const errors = form.formState.errors;
 
   return (
     <div className="space-y-5">
       <div>
-        <Label htmlFor="order-equipment">Equipamento *</Label>
-        <select
-          id="order-equipment"
-          className="mt-2 flex h-11 w-full rounded-lg border border-input bg-white px-3 text-sm shadow-xs"
-          aria-invalid={Boolean(error)}
-          disabled={!customerId}
-          {...form.register("equipmentId", {
-            onChange: (event) => onSelect(event.target.value),
-          })}
-        >
-          <option value="">
-            {customerId
-              ? "Selecione o equipamento"
-              : "Selecione o cliente primeiro"}
-          </option>
-          {available.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.brand} {item.model}
-              {item.serialNumber ? ` · ${item.serialNumber}` : ""}
-            </option>
-          ))}
-        </select>
-        <FieldError id="order-equipment-error" message={error} />
-        {customerId && available.length === 0 && (
-          <p className="mt-2 text-xs text-amber-700">
-            Este cliente ainda não possui equipamentos cadastrados.
-          </p>
-        )}
+        <Label htmlFor="order-equipment-name">Nome do equipamento *</Label>
+        <Input
+          id="order-equipment-name"
+          className="mt-2"
+          placeholder="Ex.: Notebook Dell Inspiron 15"
+          autoFocus
+          aria-invalid={Boolean(errors.equipmentName)}
+          aria-describedby={
+            errors.equipmentName ? "order-equipment-name-error" : undefined
+          }
+          {...form.register("equipmentName")}
+        />
+        <FieldError
+          id="order-equipment-name-error"
+          message={errors.equipmentName?.message}
+        />
       </div>
       <div>
         <Label htmlFor="order-equipment-description">
-          Descrição do equipamento
+          Descrição do equipamento *
         </Label>
         <Textarea
           id="order-equipment-description"
           rows={4}
           className="mt-2"
-          placeholder="Descreva o equipamento, suas características e detalhes importantes"
-          disabled={!form.watch("equipmentId")}
-          aria-invalid={Boolean(
-            form.formState.errors.equipmentDescription,
-          )}
+          placeholder="Descreva cor, marca, modelo, acessórios e detalhes importantes"
+          aria-invalid={Boolean(errors.equipmentDescription)}
+          aria-describedby={
+            errors.equipmentDescription
+              ? "order-equipment-description-error"
+              : undefined
+          }
           {...form.register("equipmentDescription")}
         />
         <FieldError
           id="order-equipment-description-error"
-          message={form.formState.errors.equipmentDescription?.message}
+          message={errors.equipmentDescription?.message}
         />
         <p className="mt-1.5 text-xs leading-5 text-slate-500">
-          Esta descrição ficará salva no equipamento e aparecerá na ordem de
+          O equipamento será cadastrado automaticamente ao salvar a ordem de
           serviço.
         </p>
-      </div>
-      <div className="rounded-xl border border-dashed border-blue-200 bg-blue-50/60 p-4">
-        <p className="text-sm font-semibold text-blue-950">
-          Recebendo outro equipamento?
-        </p>
-        <p className="mt-1 text-xs leading-5 text-blue-700/70">
-          Registre o equipamento e ele será selecionado automaticamente.
-        </p>
-        <Button
-          type="button"
-          variant="outline"
-          className="mt-3 bg-white"
-          onClick={onAdd}
-          disabled={!customerId}
-        >
-          <Plus aria-hidden="true" className="size-4" />
-          Cadastrar equipamento
-        </Button>
       </div>
     </div>
   );

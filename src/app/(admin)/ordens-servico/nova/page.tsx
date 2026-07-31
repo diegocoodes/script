@@ -28,7 +28,6 @@ export default async function NewServiceOrderPage({
       />
       <ServiceOrderForm
         initialCustomers={data.customers}
-        initialEquipment={data.equipment}
         initialCustomerId={initialCustomerId}
         today={format(now, "yyyy-MM-dd")}
         expectedDate={format(addBusinessDays(now, 3), "yyyy-MM-dd")}

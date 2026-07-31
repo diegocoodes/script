@@ -9,13 +9,16 @@ const moneyField = z.number().min(0, "O valor não pode ser negativo.");
 
 export const serviceOrderSchema = z.object({
   customerId: z.string().min(1, "Selecione um cliente."),
-  equipmentId: z.string().min(1, "Selecione um equipamento."),
+  equipmentName: z
+    .string()
+    .trim()
+    .min(2, "Informe o nome do equipamento.")
+    .max(160, "O nome deve ter no máximo 160 caracteres."),
   equipmentDescription: z
     .string()
     .trim()
-    .max(1000, "A descrição deve ter no máximo 1000 caracteres.")
-    .optional()
-    .or(z.literal("")),
+    .min(3, "Descreva o equipamento.")
+    .max(1000, "A descrição deve ter no máximo 1000 caracteres."),
   reportedDefect: z.string().trim().min(8, "Descreva o defeito relatado."),
   technicalDiagnosis: z.string().trim().optional().or(z.literal("")),
   requestedService: z.string().trim().min(4, "Informe o serviço solicitado."),

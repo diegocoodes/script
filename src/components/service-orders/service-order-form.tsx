@@ -17,10 +17,9 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { FieldPath } from "react-hook-form";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { CustomerForm } from "@/components/customers/customer-form";
-import { EquipmentForm } from "@/components/equipment/equipment-form";
 import {
   CustomerStep,
   EquipmentStep,
@@ -44,7 +43,7 @@ import {
   serviceOrderSchema,
   type ServiceOrderInput,
 } from "@/schemas/service-order";
-import type { CustomerView, EquipmentView } from "@/types/domain";
+import type { CustomerView } from "@/types/domain";
 
 const steps = [
   {
@@ -81,7 +80,7 @@ const steps = [
 
 const stepFields: Array<Array<FieldPath<ServiceOrderInput>>> = [
   ["customerId"],
-  ["equipmentId"],
+  ["equipmentName", "equipmentDescription"],
   ["reportedDefect", "requestedService"],
   ["serviceValue", "partsValue", "discount", "surcharge", "paidValue"],
   ["entryDate", "status", "priority"],
@@ -90,13 +89,11 @@ const stepFields: Array<Array<FieldPath<ServiceOrderInput>>> = [
 
 export function ServiceOrderForm({
   initialCustomers,
-  initialEquipment,
   initialCustomerId,
   today,
   expectedDate,
 }: {
   initialCustomers: CustomerView[];
-  initialEquipment: EquipmentView[];
   initialCustomerId?: string;
   today: string;
   expectedDate: string;
@@ -111,16 +108,14 @@ export function ServiceOrderForm({
     validInitialCustomerId ? 1 : 0,
   );
   const [customers, setCustomers] = useState(initialCustomers);
-  const [equipment, setEquipment] = useState(initialEquipment);
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
-  const [equipmentDialogOpen, setEquipmentDialogOpen] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const form = useForm<ServiceOrderInput>({
     resolver: zodResolver(serviceOrderSchema),
     mode: "onTouched",
     defaultValues: {
       customerId: validInitialCustomerId ?? "",
-      equipmentId: "",
+      equipmentName: "",
       equipmentDescription: "",
       reportedDefect: "",
       technicalDiagnosis: "",
@@ -146,11 +141,6 @@ export function ServiceOrderForm({
       technicianSignature: "",
     },
   });
-  const selectedCustomerId = useWatch({
-    control: form.control,
-    name: "customerId",
-  });
-
   useEffect(() => {
     function warnBeforeLeaving(event: BeforeUnloadEvent) {
       if (!form.formState.isDirty) return;
@@ -167,18 +157,6 @@ export function ServiceOrderForm({
     });
     if (isValid) {
       setCurrentStep((step) => Math.min(step + 1, steps.length - 1));
-    }
-  }
-
-  function selectEquipment(id: string) {
-    const selected = equipment.find((item) => item.id === id);
-    form.setValue("equipmentDescription", selected?.notes ?? "", {
-      shouldDirty: true,
-    });
-    if (selected && !form.getValues("reportedDefect")) {
-      form.setValue("reportedDefect", selected.reportedDefect, {
-        shouldDirty: true,
-      });
     }
   }
 
@@ -227,59 +205,21 @@ export function ServiceOrderForm({
       city: null,
       state: null,
       notes: null,
-          equipmentCount: 0,
-          orderCount: 0,
-          latestOrderId: null,
-          latestOrderNumber: null,
-          createdAt: new Date().toISOString(),
+      equipmentCount: 0,
+      orderCount: 0,
+      latestOrderId: null,
+      latestOrderNumber: null,
+      createdAt: new Date().toISOString(),
     };
     setCustomers((items) => [...items, newCustomer]);
     form.setValue("customerId", customer.id, {
       shouldDirty: true,
       shouldValidate: true,
     });
-    form.setValue("equipmentId", "");
+    form.setValue("equipmentName", "");
     form.setValue("equipmentDescription", "");
     setCustomerDialogOpen(false);
     setCurrentStep(1);
-  }
-
-  function addEquipment(item: {
-    id: string;
-    customerId: string;
-    brand: string;
-    model: string;
-    reportedDefect: string;
-    notes: string | null;
-  }) {
-    const newEquipment: EquipmentView = {
-      ...item,
-      customerName:
-        customers.find((customer) => customer.id === item.customerId)?.name ??
-        "Cliente",
-      type: "OTHER",
-      serialNumber: null,
-      color: null,
-      deliveredAccessories: null,
-      physicalCondition: null,
-      notes: item.notes,
-      orderCount: 0,
-      createdAt: new Date().toISOString(),
-    };
-    setEquipment((items) => [newEquipment, ...items]);
-    form.setValue("equipmentId", item.id, {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-    form.setValue("equipmentDescription", item.notes ?? "", {
-      shouldDirty: true,
-    });
-    if (!form.getValues("reportedDefect")) {
-      form.setValue("reportedDefect", item.reportedDefect, {
-        shouldDirty: true,
-      });
-    }
-    setEquipmentDialogOpen(false);
   }
 
   const StepIcon = steps[currentStep].icon;
@@ -385,15 +325,7 @@ export function ServiceOrderForm({
                   onAdd={() => setCustomerDialogOpen(true)}
                 />
               )}
-              {currentStep === 1 && (
-                <EquipmentStep
-                  form={form}
-                  equipment={equipment}
-                  customerId={selectedCustomerId}
-                  onAdd={() => setEquipmentDialogOpen(true)}
-                  onSelect={selectEquipment}
-                />
-              )}
+              {currentStep === 1 && <EquipmentStep form={form} />}
               {currentStep === 2 && <ProblemStep form={form} />}
               {currentStep === 3 && <ValuesStep form={form} />}
               {currentStep === 4 && <ScheduleStep form={form} />}
@@ -458,24 +390,6 @@ export function ServiceOrderForm({
             compact
             onCreated={addCustomer}
             onCancel={() => setCustomerDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={equipmentDialogOpen} onOpenChange={setEquipmentDialogOpen}>
-        <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Cadastrar equipamento</DialogTitle>
-            <DialogDescription>
-              Registre o item recebido sem sair da ordem de serviço.
-            </DialogDescription>
-          </DialogHeader>
-          <EquipmentForm
-            customers={customers}
-            defaultCustomerId={selectedCustomerId}
-            compact
-            onCreated={addEquipment}
-            onCancel={() => setEquipmentDialogOpen(false)}
           />
         </DialogContent>
       </Dialog>
