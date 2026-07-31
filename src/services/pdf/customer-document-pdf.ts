@@ -1,4 +1,5 @@
 import { paymentMethodLabels } from "@/lib/constants";
+import { addCompanyLogo } from "@/services/pdf/pdf-logo";
 import type { CompanyView, ServiceOrderView } from "@/types/domain";
 import { formatCurrency, formatDate } from "@/utils/formatters";
 
@@ -45,20 +46,30 @@ async function createPdf(title: string, company: CompanyView, reference?: string
 
   document.setFillColor(2, 8, 23);
   document.rect(0, 0, pageWidth, 40, "F");
-  document.setFillColor(0, 102, 255);
-  document.roundedRect(margin, 10, 17, 17, 3, 3, "F");
+  const hasLogo = await addCompanyLogo(document, company.logoUrl, {
+    x: margin,
+    y: 6,
+    width: 26,
+    height: 26,
+  });
+  if (!hasLogo) {
+    document.setFillColor(0, 102, 255);
+    document.roundedRect(margin, 10, 17, 17, 3, 3, "F");
+    document.setTextColor(255, 255, 255);
+    document.setFont("helvetica", "bold");
+    document.setFontSize(12);
+    document.text("DI", margin + 8.5, 21, { align: "center" });
+  }
   document.setTextColor(255, 255, 255);
   document.setFont("helvetica", "bold");
-  document.setFontSize(12);
-  document.text("DI", margin + 8.5, 21, { align: "center" });
   document.setFontSize(15);
-  document.text(company.companyName, margin + 22, 17);
+  document.text(company.companyName, margin + 30, 17);
   document.setFont("helvetica", "normal");
   document.setFontSize(6.5);
   document.setTextColor(185, 205, 232);
   document.text(
     [company.phone, company.email, company.address].filter(Boolean).join("  ·  "),
-    margin + 22,
+    margin + 30,
     23,
   );
   document.setTextColor(255, 255, 255);

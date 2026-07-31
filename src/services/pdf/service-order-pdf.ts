@@ -1,5 +1,6 @@
 import type { CompanyView, ServiceOrderView } from "@/types/domain";
 import { formatDate } from "@/utils/formatters";
+import { addCompanyLogo } from "@/services/pdf/pdf-logo";
 
 function formatTime(value: string) {
   return new Intl.DateTimeFormat("pt-BR", {
@@ -56,20 +57,30 @@ export async function downloadServiceOrderPdf(
 
   document.setFillColor(2, 8, 23);
   document.rect(0, 0, pageWidth, 37, "F");
-  document.setFillColor(0, 102, 255);
-  document.roundedRect(margin, 8, 17, 17, 3, 3, "F");
+  const hasLogo = await addCompanyLogo(document, company.logoUrl, {
+    x: margin,
+    y: 5,
+    width: 24,
+    height: 24,
+  });
+  if (!hasLogo) {
+    document.setFillColor(0, 102, 255);
+    document.roundedRect(margin, 8, 17, 17, 3, 3, "F");
+    document.setTextColor(255, 255, 255);
+    document.setFont("helvetica", "bold");
+    document.setFontSize(12);
+    document.text("DI", margin + 8.5, 19, { align: "center" });
+  }
   document.setTextColor(255, 255, 255);
   document.setFont("helvetica", "bold");
-  document.setFontSize(12);
-  document.text("DI", margin + 8.5, 19, { align: "center" });
   document.setFontSize(15);
-  document.text(company.companyName, margin + 22, 14);
+  document.text(company.companyName, margin + 28, 14);
   document.setFont("helvetica", "normal");
   document.setFontSize(6.5);
   document.setTextColor(185, 205, 232);
   document.text(
     [company.phone, company.email, company.address].filter(Boolean).join("  ·  "),
-    margin + 22,
+    margin + 28,
     20,
   );
   document.setFont("helvetica", "bold");
